@@ -8,25 +8,19 @@ package dyno
 
 import "fmt"
 
-// dm is an alias for map[string]interface{}.
-type dm = map[string]interface{}
-
 // M is a dynamic map object. It has all the utility methods you need.
-type M dm
-
-// ds is an alias for []interface{}.
-type ds = []interface{}
+type M map[string]interface{}
 
 // S is a dynamic slice object. It has all the utility methods you need.
-type S ds
+type S []interface{}
 
 // Value returns a value denoted by the path.
 // Path may be empty in which case (nil, nil) is returned.
 func Value(v interface{}, path ...interface{}) (interface{}, error) {
 	switch node := v.(type) {
-	case dm:
+	case map[string]interface{}:
 		return M(node).Value(path...)
-	case ds:
+	case []interface{}:
 		return S(node).Value(path...)
 	default:
 		return nil, fmt.Errorf("invalid node type (expecting map or slice, got: %T): %v", node, node)
