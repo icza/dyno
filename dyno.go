@@ -15,23 +15,27 @@ type M map[string]interface{}
 type S []interface{}
 
 // Value returns a value denoted by the path.
-// Path may be empty in which case (nil, nil) is returned.
+// If path is empty or nil, v is returned.
 func Value(v interface{}, path ...interface{}) (interface{}, error) {
+	if len(path) == 0 {
+		return v, nil
+	}
+
 	switch node := v.(type) {
 	case map[string]interface{}:
 		return M(node).Value(path...)
 	case []interface{}:
 		return S(node).Value(path...)
 	default:
-		return nil, fmt.Errorf("invalid node type (expecting map or slice, got: %T): %v", node, node)
+		return nil, fmt.Errorf("invalid node type (expected map or slice, got: %T): %v", node, node)
 	}
 }
 
 // Value returns a value denoted by the path.
-// Path may be empty in which case (nil, nil) is returned.
+// If path is empty or nil, m is returned (which will be of type M).
 func (m M) Value(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
-		return nil, nil
+		return m, nil
 	}
 
 	key, ok := path[0].(string)
@@ -52,10 +56,10 @@ func (m M) Value(path ...interface{}) (interface{}, error) {
 }
 
 // Value returns a value denoted by the path.
-// Path may be empty in which case (nil, nil) is returned.
+// If path is empty or nil, s is returned (which will be of type S).
 func (s S) Value(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
-		return nil, nil
+		return s, nil
 	}
 
 	idx, ok := path[0].(int)
