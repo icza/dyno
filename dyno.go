@@ -60,6 +60,40 @@ func (m MS) Get(path ...interface{}) (interface{}, error) {
 	return Get(value, path[1:]...)
 }
 
+// SGet returns a value denoted by the path consisting string elements.
+//
+// SGet is an optimized and specialised version of the generic Get.
+// The path may only contain map keys (no slice indices), and each value associated
+// with the keys (being the path elements) must also be maps with string keys,
+// except the value asssociated with the last path element.
+//
+// If path is empty or nil, m is returned (which will be of type MS).
+func (m MS) SGet(path ...string) (interface{}, error) {
+	if len(path) == 0 {
+		return m, nil
+	}
+
+	lastIdx := len(path) - 1
+	var value interface{}
+	var ok bool
+
+	for i, key := range path {
+		if value, ok = m[key]; !ok {
+			return nil, fmt.Errorf("missing key: %s", key)
+		}
+		if i == lastIdx {
+			break
+		}
+		m2, ok := value.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("invalid node type (expected map with string keys, got: %T): %v", value, value)
+		}
+		m = MS(m2)
+	}
+
+	return value, nil
+}
+
 // Get returns a value denoted by the path.
 // If path is empty or nil, m is returned (which will be of type MI).
 func (m MI) Get(path ...interface{}) (interface{}, error) {
