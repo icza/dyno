@@ -12,8 +12,8 @@ slices and maps with interface{} values and string or interface{} keys
 in any depth and combination.
 
 When operating on a dynamic object, you designate a value you're interested
-in by specifying a path. A path is a navigation; it is a series of keys
-and indices that tells how to get to the value.
+in by specifying a path. A path is a navigation; it is a series of map keys
+and slice indices that tells how to get to the value.
 
 */
 package dyno
@@ -63,9 +63,10 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 // SGet returns a value denoted by the path consisting only string keys.
 //
 // SGet is an optimized and specialized version of the general Get.
-// The path may only contain map keys (no slice indices), and each value associated
-// with the keys (being the path elements) must also be maps with string keys,
-// except the value asssociated with the last path element.
+// The path may only contain string map keys (no slice indices), and
+// each value associated with the keys (being the path elements) must also
+// be maps with string keys, except the value asssociated with the last
+// path element.
 //
 // If path is empty or nil, m is returned.
 func SGet(m map[string]interface{}, path ...string) (interface{}, error) {
