@@ -2,7 +2,19 @@
 Package dyno is a utility to work with dynamic objects at ease.
 
 Primary goal is to easily handle dynamic objects and arrays (and a mixture of these)
-that are the result of unmarshaling a JSON text into an interface{} for example.
+that are the result of unmarshaling a JSON or YAML text into an interface{}
+for example. When unmarshaling into interface{}, libraries usually choose
+map[string]interface{} or map[interface{}]interface{} to represent objects,
+and []interface{} to represent arrays.
+
+Package dyno supports dynamic objects that are a mixture of interface{}
+slices and maps with interface{} values and string or interface{} keys
+in any depth and combination.
+
+When operating on a dynamic object, you designate a value you're interested
+in by specifying a path. A path is a navigation; it is a series of keys
+and indices that tells how to get to the value.
+
 */
 package dyno
 
