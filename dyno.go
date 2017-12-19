@@ -17,28 +17,28 @@ type MI map[interface{}]interface{}
 // S is a dynamic slice object, armed with utility methods.
 type S []interface{}
 
-// Value returns a value denoted by the path.
+// Get returns a value denoted by the path.
 // If path is empty or nil, v is returned.
-func Value(v interface{}, path ...interface{}) (interface{}, error) {
+func Get(v interface{}, path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
 		return v, nil
 	}
 
 	switch node := v.(type) {
 	case map[string]interface{}:
-		return MS(node).Value(path...)
+		return MS(node).Get(path...)
 	case []interface{}:
-		return S(node).Value(path...)
+		return S(node).Get(path...)
 	case map[interface{}]interface{}:
-		return MI(node).Value(path...)
+		return MI(node).Get(path...)
 	default:
 		return nil, fmt.Errorf("invalid node type (expected map or slice, got: %T): %v", node, node)
 	}
 }
 
-// Value returns a value denoted by the path.
+// Get returns a value denoted by the path.
 // If path is empty or nil, m is returned (which will be of type MS).
-func (m MS) Value(path ...interface{}) (interface{}, error) {
+func (m MS) Get(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
 		return m, nil
 	}
@@ -57,12 +57,12 @@ func (m MS) Value(path ...interface{}) (interface{}, error) {
 		return value, nil
 	}
 
-	return Value(value, path[1:]...)
+	return Get(value, path[1:]...)
 }
 
-// Value returns a value denoted by the path.
+// Get returns a value denoted by the path.
 // If path is empty or nil, m is returned (which will be of type MI).
-func (m MI) Value(path ...interface{}) (interface{}, error) {
+func (m MI) Get(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
 		return m, nil
 	}
@@ -76,12 +76,12 @@ func (m MI) Value(path ...interface{}) (interface{}, error) {
 		return value, nil
 	}
 
-	return Value(value, path[1:]...)
+	return Get(value, path[1:]...)
 }
 
-// Value returns a value denoted by the path.
+// Get returns a value denoted by the path.
 // If path is empty or nil, s is returned (which will be of type S).
-func (s S) Value(path ...interface{}) (interface{}, error) {
+func (s S) Get(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
 		return s, nil
 	}
@@ -100,5 +100,5 @@ func (s S) Value(path ...interface{}) (interface{}, error) {
 		return value, nil
 	}
 
-	return Value(value, path[1:]...)
+	return Get(value, path[1:]...)
 }

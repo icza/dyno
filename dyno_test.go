@@ -5,18 +5,18 @@ import (
 	"testing"
 )
 
-func TestGeneral(t *testing.T) {
-	s := []interface{}{
+var (
+	s = []interface{}{
 		1, "a", 3.3, []interface{}{"inner", "inner2"},
 	}
-	mi := map[interface{}]interface{}{
+	mi = map[interface{}]interface{}{
 		"x": 1,
 		"y": 2,
 		"z": map[interface{}]interface{}{
 			3: "three",
 		},
 	}
-	ms := map[string]interface{}{
+	ms = map[string]interface{}{
 		"a": 1,
 		"p": map[string]interface{}{
 			"x": 1,
@@ -27,7 +27,9 @@ func TestGeneral(t *testing.T) {
 		"b":  2,
 		"sl": s,
 	}
+)
 
+func TestGeneral(t *testing.T) {
 	cases := []struct {
 		title string        // Human readable title of the test case
 		v     interface{}   // Input dynamic object
@@ -190,7 +192,7 @@ func TestGeneral(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		value, err := Value(c.v, c.path...)
+		value, err := Get(c.v, c.path...)
 		if !reflect.DeepEqual(value, c.value) {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}
@@ -198,31 +200,27 @@ func TestGeneral(t *testing.T) {
 			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
 		}
 	}
+}
 
-	// Test MS.Value() with empty path:
-	v, err := MS(ms).Value()
-	if err != nil {
-		t.Errorf("MS.Value() with empty path returned error: %v", err)
-	}
-	if !reflect.DeepEqual(v, MS(ms)) {
-		t.Error("MS.Value() with empty path misbehaves!", v, ms)
-	}
-
-	// Test MI.Value() with empty path:
-	v, err = MI(mi).Value()
-	if err != nil {
-		t.Errorf("MI.Value() with empty path returned error: %v", err)
-	}
-	if !reflect.DeepEqual(v, MI(mi)) {
-		t.Error("MI.Value() with empty path misbehaves!", v, mi)
+// TestTypeGetEmptyPath tests type-specific Get methods with empty path.
+func TestTypeGetEmptyPath(t *testing.T) {
+	cases := []struct {
+		name     string                                    // Name of the type
+		receiver interface{}                               // Receiver
+		get      func(...interface{}) (interface{}, error) // Get method value
+	}{
+		{"MS", MS(ms), MS(ms).Get},
+		{"MI", MI(mi), MI(mi).Get},
+		{"S", S(s), S(s).Get},
 	}
 
-	// Test S.Value() with empty path:
-	v, err = S(s).Value()
-	if err != nil {
-		t.Errorf("S.Value() with empty path returned error: %v", err)
-	}
-	if !reflect.DeepEqual(v, S(s)) {
-		t.Error("S.Value() with empty path misbehaves!", v, s)
+	for _, c := range cases {
+		v, err := c.get()
+		if err != nil {
+			t.Errorf("%s.Value() with empty path returned error: %v", c.name, err)
+		}
+		if !reflect.DeepEqual(v, c.receiver) {
+			t.Errorf("%s.Value() with empty path misbehaves, expected: %v, got: %v", c.name, ms, v)
+		}
 	}
 }
