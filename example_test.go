@@ -1,9 +1,11 @@
-package dyno
+package dyno_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/icza/dyno"
 )
 
 func ExampleGet() {
@@ -22,17 +24,17 @@ func ExampleGet() {
 		}
 	}
 
-	v, err := Get(m, "a")
+	v, err := dyno.Get(m, "a")
 	printResults(v, err)
 
-	v, err = Get(m, "b", 3, 1)
+	v, err = dyno.Get(m, "b", 3, 1)
 	printResults(v, err)
 
-	v, err = Get(m, "x")
+	v, err = dyno.Get(m, "x")
 	printResults(v, err)
 
-	sl, _ := Get(m, "b", 3) // This is: []interface{}{1, "two", 3.3}
-	v, err = Get(sl, 4)
+	sl, _ := dyno.Get(m, "b", 3) // This is: []interface{}{1, "two", 3.3}
+	v, err = dyno.Get(sl, 4)
 	printResults(v, err)
 
 	// Output:
@@ -59,17 +61,17 @@ func ExampleSet() {
 		}
 	}
 
-	err := Set(m, 2, "a")
+	err := dyno.Set(m, 2, "a")
 	printResults(err)
 
-	err = Set(m, "owt", "b", "3", 1)
+	err = dyno.Set(m, "owt", "b", "3", 1)
 	printResults(err)
 
-	err = Set(m, 1, "x")
+	err = dyno.Set(m, 1, "x")
 	printResults(err)
 
-	sl, _ := Get(m, "b", "3") // This is: []interface{}{1, "owt", 3.3}
-	err = Set(sl, 1, 4)
+	sl, _ := dyno.Get(m, "b", "3") // This is: []interface{}{1, "owt", 3.3}
+	err = dyno.Set(sl, 1, 4)
 	printResults(err)
 
 	// Output:
