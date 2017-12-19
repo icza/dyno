@@ -25,13 +25,13 @@ var (
 		"pi": mi,
 		"ns": []interface{}{1.1, 2.2, 3.3},
 		"b":  2,
-		"sl": s,
+		"s":  s,
 	}
 )
 
 func TestGet(t *testing.T) {
 	cases := []struct {
-		title string        // Human readable title of the test case
+		title string        // Title of the test case
 		v     interface{}   // Input dynamic object
 		path  []interface{} // path whose value to get
 		value interface{}   // Expected value
@@ -39,39 +39,15 @@ func TestGet(t *testing.T) {
 	}{
 		// Testing success:
 		{
-			title: "nil path on map (MS)",
+			title: "nil path on map",
 			v:     ms,
 			path:  nil,
 			value: ms,
-		},
-		{
-			title: "nil path on map (MI)",
-			v:     mi,
-			path:  nil,
-			value: mi,
 		},
 		{
 			title: "nil path on slice",
 			v:     s,
 			path:  nil,
-			value: s,
-		},
-		{
-			title: "empty path on map (MS)",
-			v:     ms,
-			path:  []interface{}{},
-			value: ms,
-		},
-		{
-			title: "empty path on map (MI)",
-			v:     mi,
-			path:  []interface{}{},
-			value: mi,
-		},
-		{
-			title: "empty path on slice",
-			v:     s,
-			path:  []interface{}{},
 			value: s,
 		},
 		{
@@ -83,7 +59,7 @@ func TestGet(t *testing.T) {
 		{
 			title: "simple map element #2",
 			v:     ms,
-			path:  []interface{}{"sl"},
+			path:  []interface{}{"s"},
 			value: s,
 		},
 		{
@@ -93,13 +69,13 @@ func TestGet(t *testing.T) {
 			value: 1,
 		},
 		{
-			title: "nested map (MI) element",
+			title: "nested map (mi) element",
 			v:     ms,
 			path:  []interface{}{"pi", "x"},
 			value: 1,
 		},
 		{
-			title: "nested map (MI) element #2",
+			title: "nested map (mi) element #2",
 			v:     ms,
 			path:  []interface{}{"pi", "z", 3},
 			value: "three",
@@ -119,7 +95,7 @@ func TestGet(t *testing.T) {
 		{
 			title: "map element and slice element #2",
 			v:     ms,
-			path:  []interface{}{"sl", 1},
+			path:  []interface{}{"s", 1},
 			value: "a",
 		},
 
@@ -131,25 +107,25 @@ func TestGet(t *testing.T) {
 			isErr: true,
 		},
 		{
-			title: "missing key (MS) error",
-			v:     ms,
-			path:  []interface{}{"x"},
-			isErr: true,
-		},
-		{
-			title: "missing key (MI) error",
-			v:     mi,
-			path:  []interface{}{"a"},
-			isErr: true,
-		},
-		{
 			title: "element is not string error",
 			v:     ms,
 			path:  []interface{}{1},
 			isErr: true,
 		},
 		{
-			title: "element is not int error",
+			title: "missing key (ms) error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			isErr: true,
+		},
+		{
+			title: "missing key (mi) error",
+			v:     mi,
+			path:  []interface{}{"a"},
+			isErr: true,
+		},
+		{
+			title: "expected int path element error",
 			v:     ms,
 			path:  []interface{}{"ns", "x"},
 			isErr: true,
@@ -192,13 +168,13 @@ func TestSGet(t *testing.T) {
 			title: "nil path on map",
 			v:     ms,
 			path:  nil,
-			value: MS(ms),
+			value: ms,
 		},
 		{
 			title: "empty path on map",
 			v:     ms,
 			path:  []string{},
-			value: MS(ms),
+			value: ms,
 		},
 		{
 			title: "simple map element",
@@ -209,7 +185,7 @@ func TestSGet(t *testing.T) {
 		{
 			title: "simple map element #2",
 			v:     ms,
-			path:  []string{"sl"},
+			path:  []string{"s"},
 			value: s,
 		},
 		{
@@ -221,55 +197,32 @@ func TestSGet(t *testing.T) {
 
 		// Testing errors:
 		{
-			title: "invalid node type error",
-			v:     ms,
-			path:  []string{"pi", "x"},
-			isErr: true,
-		},
-		{
 			title: "missing key error",
 			v:     ms,
 			path:  []string{"x"},
 			isErr: true,
 		},
 		{
-			title: "missing key (MI) error",
+			title: "invalid node type error",
 			v:     ms,
-			path:  []string{"pi", "a"},
+			path:  []string{"pi", "x"},
+			isErr: true,
+		},
+		{
+			title: "invalid node type error #2",
+			v:     ms,
+			path:  []string{"ns", "1"},
 			isErr: true,
 		},
 	}
 
 	for _, c := range cases {
-		value, err := MS(c.v).SGet(c.path...)
+		value, err := SGet(c.v, c.path...)
 		if !reflect.DeepEqual(value, c.value) {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}
 		if c.isErr != (err != nil) {
 			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
-		}
-	}
-}
-
-// TestTypeSpecificGetEmptyPath tests type-specific Get methods with empty path.
-func TestTypeSpecificGetEmptyPath(t *testing.T) {
-	cases := []struct {
-		name     string                                    // Name of the type
-		receiver interface{}                               // Receiver
-		get      func(...interface{}) (interface{}, error) // Get method value
-	}{
-		{"MS", MS(ms), MS(ms).Get},
-		{"MI", MI(mi), MI(mi).Get},
-		{"S", S(s), S(s).Get},
-	}
-
-	for _, c := range cases {
-		v, err := c.get()
-		if err != nil {
-			t.Errorf("%s.Value() with empty path returned error: %v", c.name, err)
-		}
-		if !reflect.DeepEqual(v, c.receiver) {
-			t.Errorf("%s.Value() with empty path misbehaves, expected: %v, got: %v", c.name, ms, v)
 		}
 	}
 }
