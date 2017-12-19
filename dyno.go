@@ -2,7 +2,7 @@
 Package dyno is a utility to work with dynamic objects at ease.
 
 Primary goal is to easily handle dynamic objects and arrays (and a mixture of these)
-that are the result of unmarshaling a JSON text into an `interface{}` for example.
+that are the result of unmarshaling a JSON text into an interface{} for example.
 */
 package dyno
 
@@ -16,7 +16,7 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 		case map[string]interface{}:
 			key, ok := el.(string)
 			if !ok {
-				return nil, fmt.Errorf("path element is not string: %v (element idx: %d)", el, i)
+				return nil, fmt.Errorf("expected string path element, got: %T (element idx: %d)", el, i)
 			}
 			v, ok = node[key]
 			if !ok {
@@ -41,7 +41,7 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 			v = node[idx]
 
 		default:
-			return nil, fmt.Errorf("invalid node type, expected map or slice, got: %T (path element idx: %d)", node, i)
+			return nil, fmt.Errorf("expected map or slice node, got: %T (path element idx: %d)", node, i)
 		}
 	}
 
@@ -74,10 +74,57 @@ func SGet(m map[string]interface{}, path ...string) (interface{}, error) {
 		}
 		m2, ok := value.(map[string]interface{})
 		if !ok {
-			return nil, fmt.Errorf("invalid node type, expected map with string keys, got: %T (path element idx: %d)", value, i)
+			return nil, fmt.Errorf("expected map with string keys node, got: %T (path element idx: %d)", value, i)
 		}
 		m = m2
 	}
 
 	return value, nil
+}
+
+// Set sets a map or slice element denoted by the path.
+// The map or slice whose element is to be set must already exist.
+// Path cannot be empty or nil, else an error is returned.
+func Set(v interface{}, value interface{}, path ...interface{}) error {
+	if len(path) == 0 {
+		return fmt.Errorf("path cannot be empty")
+	}
+
+	i := len(path) - 1 // The last index
+	if len(path) > 1 {
+		var err error
+		v, err = Get(v, path[:i]...)
+		if err != nil {
+			return err
+		}
+	}
+
+	el := path[i]
+
+	switch node := v.(type) {
+	case map[string]interface{}:
+		key, ok := el.(string)
+		if !ok {
+			return fmt.Errorf("expected string path element, got: %T (element idx: %d)", el, i)
+		}
+		node[key] = value
+
+	case map[interface{}]interface{}:
+		node[el] = value
+
+	case []interface{}:
+		idx, ok := el.(int)
+		if !ok {
+			return fmt.Errorf("expected int path element, got: %T (path element idx: %d)", el, i)
+		}
+		if idx < 0 || idx >= len(node) {
+			return fmt.Errorf("index out of range: %d (path element idx: %d)", idx, i)
+		}
+		node[idx] = value
+
+	default:
+		return fmt.Errorf("expected map or slice node, got: %T (path element idx: %d)", node, i)
+	}
+
+	return nil
 }

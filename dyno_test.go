@@ -37,7 +37,7 @@ func TestGet(t *testing.T) {
 		value interface{}   // Expected value
 		isErr bool          // Tells if error is expected
 	}{
-		// Testing success:
+		// Test success:
 		{
 			title: "nil path on map",
 			v:     ms,
@@ -99,15 +99,15 @@ func TestGet(t *testing.T) {
 			value: "a",
 		},
 
-		// Testing errors:
+		// Test errors:
 		{
-			title: "invalid node type error",
+			title: "expected map or slice node error",
 			v:     1,
 			path:  []interface{}{"x"},
 			isErr: true,
 		},
 		{
-			title: "element is not string error",
+			title: "expected string path element error",
 			v:     ms,
 			path:  []interface{}{1},
 			isErr: true,
@@ -157,13 +157,13 @@ func TestGet(t *testing.T) {
 
 func TestSGet(t *testing.T) {
 	cases := []struct {
-		title string                 // Human readable title of the test case
+		title string                 // Title of the test case
 		v     map[string]interface{} // Input map
 		path  []string               // path whose value to get
 		value interface{}            // Expected value
 		isErr bool                   // Tells if error is expected
 	}{
-		// Testing success:
+		// Test success:
 		{
 			title: "nil path on map",
 			v:     ms,
@@ -195,7 +195,7 @@ func TestSGet(t *testing.T) {
 			value: 1,
 		},
 
-		// Testing errors:
+		// Test errors:
 		{
 			title: "missing key error",
 			v:     ms,
@@ -203,13 +203,13 @@ func TestSGet(t *testing.T) {
 			isErr: true,
 		},
 		{
-			title: "invalid node type error",
+			title: "expected map with string keys node error",
 			v:     ms,
 			path:  []string{"pi", "x"},
 			isErr: true,
 		},
 		{
-			title: "invalid node type error #2",
+			title: "expected map with string keys node error #2",
 			v:     ms,
 			path:  []string{"ns", "1"},
 			isErr: true,
@@ -220,6 +220,150 @@ func TestSGet(t *testing.T) {
 		value, err := SGet(c.v, c.path...)
 		if !reflect.DeepEqual(value, c.value) {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestSet(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		value interface{}   // Value to set
+		path  []interface{} // path whose value to set
+		exp   interface{}   // Expected result
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "add new map element",
+			v:     map[string]interface{}{},
+			value: 1,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": 1},
+		},
+		{
+			title: "change existing map element",
+			v:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": 2},
+		},
+		{
+			title: "change existing slice element",
+			v:     []interface{}{"a", 1},
+			value: 2,
+			path:  []interface{}{1},
+			exp:   []interface{}{"a", 2},
+		},
+		{
+			title: "change existing map (mi) element",
+			v:     map[interface{}]interface{}{1: "one"},
+			value: "two",
+			path:  []interface{}{1},
+			exp:   map[interface{}]interface{}{1: "two"},
+		},
+		{
+			title: "change existing nested map element",
+			v: map[string]interface{}{
+				"a": map[string]interface{}{"b": 1},
+			},
+			value: 2,
+			path:  []interface{}{"a", "b"},
+			exp: map[string]interface{}{
+				"a": map[string]interface{}{"b": 2},
+			},
+		},
+		{
+			title: "replace existing element with a value of different type",
+			v: map[string]interface{}{
+				"a": map[string]interface{}{"b": 1},
+			},
+			value: 2,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": 2},
+		},
+		{
+			title: "change existing element in map-slice-map",
+			v: map[string]interface{}{
+				"a": []interface{}{
+					map[string]interface{}{"b": 1},
+				},
+			},
+			value: 2,
+			path:  []interface{}{"a", 0, "b"},
+			exp: map[string]interface{}{
+				"a": []interface{}{
+					map[string]interface{}{"b": 2},
+				},
+			},
+		},
+
+		// Test errors:
+		{
+			title: "change existing map element",
+			v:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []interface{}{},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "internal Get call returns error",
+			v:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []interface{}{"b", "c"},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "expected string path element error",
+			v:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []interface{}{1},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "expected int path element error",
+			v:     []interface{}{"a", 1},
+			value: 2,
+			path:  []interface{}{"a"},
+			exp:   []interface{}{"a", 1},
+			isErr: true,
+		},
+		{
+			title: "index out of range error (negative)",
+			v:     []interface{}{"a", 1},
+			value: 2,
+			path:  []interface{}{-1},
+			exp:   []interface{}{"a", 1},
+			isErr: true,
+		},
+		{
+			title: "index out of range error (too big)",
+			v:     []interface{}{"a", 1},
+			value: 2,
+			path:  []interface{}{11},
+			exp:   []interface{}{"a", 1},
+			isErr: true,
+		},
+		{
+			title: "expected map or slice node error",
+			v:     1,
+			value: 2,
+			path:  []interface{}{"x"},
+			exp:   1,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		err := Set(c.v, c.value, c.path...)
+		if !reflect.DeepEqual(c.v, c.exp) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.v)
 		}
 		if c.isErr != (err != nil) {
 			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
