@@ -8,10 +8,13 @@ package dyno
 
 import "fmt"
 
-// M is a dynamic map object. It has all the utility methods you need.
-type M map[string]interface{}
+// MS is a dynamic map object with string keys, armed with utility methods.
+type MS map[string]interface{}
 
-// S is a dynamic slice object. It has all the utility methods you need.
+// MI is a dynamic map object with interface{} keys, armed with utility methods.
+type MI map[interface{}]interface{}
+
+// S is a dynamic slice object, armed with utility methods.
 type S []interface{}
 
 // Value returns a value denoted by the path.
@@ -23,17 +26,19 @@ func Value(v interface{}, path ...interface{}) (interface{}, error) {
 
 	switch node := v.(type) {
 	case map[string]interface{}:
-		return M(node).Value(path...)
+		return MS(node).Value(path...)
 	case []interface{}:
 		return S(node).Value(path...)
+	case map[interface{}]interface{}:
+		return MI(node).Value(path...)
 	default:
 		return nil, fmt.Errorf("invalid node type (expected map or slice, got: %T): %v", node, node)
 	}
 }
 
 // Value returns a value denoted by the path.
-// If path is empty or nil, m is returned (which will be of type M).
-func (m M) Value(path ...interface{}) (interface{}, error) {
+// If path is empty or nil, m is returned (which will be of type MS).
+func (m MS) Value(path ...interface{}) (interface{}, error) {
 	if len(path) == 0 {
 		return m, nil
 	}
@@ -46,6 +51,25 @@ func (m M) Value(path ...interface{}) (interface{}, error) {
 	value, ok := m[key]
 	if !ok {
 		return nil, fmt.Errorf("missing key: %s", key)
+	}
+
+	if len(path) == 1 {
+		return value, nil
+	}
+
+	return Value(value, path[1:]...)
+}
+
+// Value returns a value denoted by the path.
+// If path is empty or nil, m is returned (which will be of type MI).
+func (m MI) Value(path ...interface{}) (interface{}, error) {
+	if len(path) == 0 {
+		return m, nil
+	}
+
+	value, ok := m[path[0]]
+	if !ok {
+		return nil, fmt.Errorf("missing key: %s", path[0])
 	}
 
 	if len(path) == 1 {
