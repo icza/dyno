@@ -60,7 +60,7 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 	return v, nil
 }
 
-// SGet returns a value denoted by the path consisting only string keys.
+// SGet returns a value denoted by the path consisting of only string keys.
 //
 // SGet is an optimized and specialized version of the general Get.
 // The path may only contain string map keys (no slice indices), and
@@ -139,5 +139,39 @@ func Set(v interface{}, value interface{}, path ...interface{}) error {
 		return fmt.Errorf("expected map or slice node, got: %T (path element idx: %d)", node, i)
 	}
 
+	return nil
+}
+
+// SSet sets a map element with string key type, denoted by the path
+// consisting of only string keys.
+//
+// SSet is an optimized and specialized version of the general Set. The
+// path may only contain string map keys (no slice indices), and each
+// value associated with the keys (being the path elements) must also be
+// maps with string keys, except the value associated with the last path
+// element.
+//
+// The map or slice whose element is to be set must already exist.
+// Path cannot be empty or nil, else an error is returned.
+func SSet(m map[string]interface{}, value interface{}, path ...string) error {
+	if len(path) == 0 {
+		return fmt.Errorf("path cannot be empty")
+	}
+
+	i := len(path) - 1 // The last index
+	if len(path) > 1 {
+		v, err := SGet(m, path[:i]...)
+		if err != nil {
+			return err
+		}
+
+		var ok bool
+		m, ok = v.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("expected map with string keys node, got: %T (path element idx: %d)", value, i)
+		}
+	}
+
+	m[path[i]] = value
 	return nil
 }

@@ -303,7 +303,7 @@ func TestSet(t *testing.T) {
 
 		// Test errors:
 		{
-			title: "change existing map element",
+			title: "path cannot be empty error",
 			v:     map[string]interface{}{"a": 1},
 			value: 2,
 			path:  []interface{}{},
@@ -364,6 +364,93 @@ func TestSet(t *testing.T) {
 		err := Set(c.v, c.value, c.path...)
 		if !reflect.DeepEqual(c.v, c.exp) {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.v)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestSSet(t *testing.T) {
+	cases := []struct {
+		title string                 // Title of the test case
+		m     map[string]interface{} // Input map
+		value interface{}            // Value to set
+		path  []string               // path whose value to set
+		exp   map[string]interface{} // Expected result
+		isErr bool                   // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "add new map element",
+			m:     map[string]interface{}{},
+			value: 1,
+			path:  []string{"a"},
+			exp:   map[string]interface{}{"a": 1},
+		},
+		{
+			title: "change existing map element",
+			m:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []string{"a"},
+			exp:   map[string]interface{}{"a": 2},
+		},
+		{
+			title: "change existing nested map element",
+			m: map[string]interface{}{
+				"a": map[string]interface{}{"b": 1},
+			},
+			value: 2,
+			path:  []string{"a", "b"},
+			exp: map[string]interface{}{
+				"a": map[string]interface{}{"b": 2},
+			},
+		},
+		{
+			title: "replace existing element with a value of different type",
+			m: map[string]interface{}{
+				"a": map[string]interface{}{"b": 1},
+			},
+			value: 2,
+			path:  []string{"a"},
+			exp:   map[string]interface{}{"a": 2},
+		},
+
+		// Test errors:
+		{
+			title: "path cannot be empty error",
+			m:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []string{},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "internal SGet call returns error",
+			m:     map[string]interface{}{"a": 1},
+			value: 2,
+			path:  []string{"b", "c"},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "expected map with string keys node error",
+			m: map[string]interface{}{
+				"a": 1,
+			},
+			value: 2,
+			path:  []string{"a", "b"},
+			exp: map[string]interface{}{
+				"a": 1,
+			},
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		err := SSet(c.m, c.value, c.path...)
+		if !reflect.DeepEqual(c.m, c.exp) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.m)
 		}
 		if c.isErr != (err != nil) {
 			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
