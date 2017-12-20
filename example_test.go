@@ -21,18 +21,15 @@ func Example() {
 	}
 
 	printPerson := func(err error) {
+		json.NewEncoder(os.Stdout).Encode(person) // Output JSON
 		if err != nil {
 			fmt.Println("ERROR:", err)
-		} else {
-			// Use JSON output so map entry order is consistent:
-			json.NewEncoder(os.Stdout).Encode(person)
 		}
 	}
 
 	printPerson(nil)
-
 	v, err := dyno.Get(person, "name", "first")
-	fmt.Println(v, err)
+	fmt.Printf("First name: %v, error: %v\n", v, err)
 
 	printPerson(dyno.Set(person, "Alice", "name", "first"))
 	printPerson(dyno.Set(person, "Alice Archer", "name"))
@@ -41,7 +38,7 @@ func Example() {
 
 	// Output:
 	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Bob","last":"Archer"}}
-	// Bob <nil>
+	// First name: Bob, error: <nil>
 	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Alice","last":"Archer"}}
 	// {"age":22,"fruits":["apple","banana"],"name":"Alice Archer"}
 	// {"age":22,"fruits":["apple","lemon"],"name":"Alice Archer"}
@@ -83,11 +80,9 @@ func ExampleSet() {
 	}
 
 	printMap := func(err error) {
+		json.NewEncoder(os.Stdout).Encode(m) // Output JSON
 		if err != nil {
 			fmt.Println("ERROR:", err)
-		} else {
-			// Use JSON output so map entry order is consistent:
-			json.NewEncoder(os.Stdout).Encode(m)
 		}
 	}
 
@@ -102,6 +97,7 @@ func ExampleSet() {
 	// {"a":2,"b":{"3":[1,"two",3.3]}}
 	// {"a":2,"b":{"3":[1,"owt",3.3]}}
 	// {"a":2,"b":{"3":[1,"owt",3.3]},"x":1}
+	// {"a":2,"b":{"3":[1,"owt",3.3]},"x":1}
 	// ERROR: index out of range: 4 (path element idx: 0)
 }
 
@@ -113,10 +109,9 @@ func ExampleAppend() {
 	}
 
 	printMap := func(err error) {
+		fmt.Println(m)
 		if err != nil {
 			fmt.Println("ERROR:", err)
-		} else {
-			fmt.Println(m)
 		}
 	}
 
@@ -126,6 +121,7 @@ func ExampleAppend() {
 
 	// Output:
 	// map[a:[3 2 [1 two 3.3] 4]]
+	// map[a:[3 2 [1 two 3.3 9] 4]]
 	// map[a:[3 2 [1 two 3.3 9] 4]]
 	// ERROR: missing key: x (path element idx: 0)
 }
