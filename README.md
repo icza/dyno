@@ -18,4 +18,7 @@ these in any depth and combination.
 
 When operating on a dynamic object, you designate a value you're interested
 in by specifying a _path_. A path is a _navigation_; it is a series of map keys
-and slice indices that tells how to get to the value.
+and `int` slice indices that tells how to get to the value.
+
+The implementation does not uses reflection at all (only type assertions), so
+performance is rather good.
