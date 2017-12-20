@@ -457,3 +457,88 @@ func TestSSet(t *testing.T) {
 		}
 	}
 }
+
+func TestAppend(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		value interface{}   // Value to append
+		path  []interface{} // path of slice to append to
+		exp   interface{}   // Expected result
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "append to nil slice",
+			v: map[string]interface{}{
+				"a": []interface{}(nil),
+			},
+			value: 1,
+			path:  []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{1},
+			},
+		},
+		{
+			title: "append to slice",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			value: 1,
+			path:  []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3, 1},
+			},
+		},
+
+		// Test errors:
+		{
+			title: "path cannot be empty error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			value: 1,
+			path:  []interface{}{},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			isErr: true,
+		},
+		{
+			title: "internal Get call returns error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			value: 1,
+			path:  []interface{}{"b"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			isErr: true,
+		},
+		{
+			title: "expected slice node error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+				"b": 1,
+			},
+			value: 1,
+			path:  []interface{}{"b"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+				"b": 1,
+			},
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		err := Append(c.v, c.value, c.path...)
+		if !reflect.DeepEqual(c.v, c.exp) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.v)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}

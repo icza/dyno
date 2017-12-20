@@ -96,7 +96,7 @@ func SGet(m map[string]interface{}, path ...string) (interface{}, error) {
 // Set sets a map or slice element denoted by the path.
 //
 // The last element of the path must be a map key or a slice index, and the
-// preceeding path must denote a map or a slice which must already exist.
+// preceeding path must denote a map or a slice respectively which must already exist.
 //
 // Path cannot be empty or nil, else an error is returned.
 func Set(v interface{}, value interface{}, path ...interface{}) error {
@@ -177,4 +177,28 @@ func SSet(m map[string]interface{}, value interface{}, path ...string) error {
 
 	m[path[i]] = value
 	return nil
+}
+
+// Append appends a value to a slice denoted by the path.
+//
+// The slice denoted by path must already exist.
+//
+// Path cannot be empty or nil, else an error is returned.
+func Append(v interface{}, value interface{}, path ...interface{}) error {
+	if len(path) == 0 {
+		return fmt.Errorf("path cannot be empty")
+	}
+
+	node, err := Get(v, path...)
+	if err != nil {
+		return err
+	}
+
+	s, ok := node.([]interface{})
+	if !ok {
+		return fmt.Errorf("expected slice node, got: %T (path element idx: %d)", node, len(path))
+	}
+
+	// Must set the new slice value:
+	return Set(v, append(s, value), path...)
 }
