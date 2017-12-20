@@ -76,6 +76,21 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 	return i, nil
 }
 
+// GetFloat returns a float64 value denoted by the path.
+//
+// If path is empty or nil, v is returned as a float64.
+func GetFloat(v interface{}, path ...interface{}) (float64, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return 0, err
+	}
+	f, ok := v.(float64)
+	if !ok {
+		return 0, fmt.Errorf("expected float64, got: %T", v)
+	}
+	return f, nil
+}
+
 // GetString returns a string value denoted by the path.
 //
 // If path is empty or nil, v is returned as a string.

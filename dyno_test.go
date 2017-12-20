@@ -27,6 +27,7 @@ var (
 		"b":   2,
 		"s":   s,
 		"str": "abc",
+		"flt": 3.14,
 	}
 )
 
@@ -197,6 +198,56 @@ func TestGetInt(t *testing.T) {
 
 	for _, c := range cases {
 		value, err := GetInt(c.v, c.path...)
+		if value != c.value {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestGetFloat(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value float64       // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on float64",
+			v:     3.14,
+			path:  []interface{}{},
+			value: 3.14,
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"flt"},
+			value: 3.14,
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: 0,
+			isErr: true,
+		},
+		{
+			title: "expected float64 error",
+			v:     ms,
+			path:  []interface{}{"s"},
+			value: 0,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetFloat(c.v, c.path...)
 		if value != c.value {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}
