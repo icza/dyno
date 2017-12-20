@@ -80,3 +80,34 @@ func ExampleSet() {
 	// {"a":2,"b":{"3":[1,"owt",3.3]},"x":1}
 	// ERROR: index out of range: 4 (path element idx: 0)
 }
+
+func ExampleAppend() {
+	m := map[string]interface{}{
+		"a": []interface{}{
+			"3", 2, []interface{}{1, "two", 3.3},
+		},
+	}
+
+	printResults := func(err error) {
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		} else {
+			// Use JSON output so map entry order is consistent:
+			fmt.Println(m)
+		}
+	}
+
+	err := dyno.Append(m, 4, "a")
+	printResults(err)
+
+	err = dyno.Append(m, 9, "a", 2)
+	printResults(err)
+
+	err = dyno.Append(m, 1, "x")
+	printResults(err)
+
+	// Output:
+	// map[a:[3 2 [1 two 3.3] 4]]
+	// map[a:[3 2 [1 two 3.3 9] 4]]
+	// ERROR: missing key: x (path element idx: 0)
+}
