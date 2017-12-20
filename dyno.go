@@ -61,6 +61,21 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 	return v, nil
 }
 
+// GetInt returns an int value denoted by the path.
+//
+// If path is empty or nil, v is returned.
+func GetInt(v interface{}, path ...interface{}) (int, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return 0, err
+	}
+	i, ok := v.(int)
+	if !ok {
+		return 0, fmt.Errorf("expected int, got: %T", v)
+	}
+	return i, nil
+}
+
 // SGet returns a value denoted by the path consisting of only string keys.
 //
 // SGet is an optimized and specialized version of the general Get.

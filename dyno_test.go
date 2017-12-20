@@ -155,6 +155,56 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestGetInt(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value int           // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on int",
+			v:     1,
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: 1,
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: 0,
+			isErr: true,
+		},
+		{
+			title: "expected int error",
+			v:     ms,
+			path:  []interface{}{"s"},
+			value: 0,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetInt(c.v, c.path...)
+		if value != c.value {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestSGet(t *testing.T) {
 	cases := []struct {
 		title string                 // Title of the test case
