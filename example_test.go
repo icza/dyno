@@ -31,18 +31,23 @@ func Example() {
 	v, err := dyno.Get(person, "name", "first")
 	fmt.Printf("First name: %v, error: %v\n", v, err)
 
-	printPerson(dyno.Set(person, "Alice", "name", "first"))
-	printPerson(dyno.Set(person, "Alice Archer", "name"))
-	printPerson(dyno.Set(person, "lemon", "fruits", 1))
-	printPerson(dyno.Append(person, "melon", "fruits"))
+	printPerson(dyno.Set(person, "Alice", "name", "first")) // Change first name
+	printPerson(dyno.Set(person, "Alice Archer", "name"))   // Change complete name to a single string
+	age, err := dyno.GetInt(person, "age")
+	fmt.Printf("Age: %v, error: %v\n", age, err)
+	printPerson(dyno.Set(person, age+1, "age"))         // Increment age
+	printPerson(dyno.Set(person, "lemon", "fruits", 1)) // Change a fruits slice element
+	printPerson(dyno.Append(person, "melon", "fruits")) // Add a new fruit
 
 	// Output:
 	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Bob","last":"Archer"}}
 	// First name: Bob, error: <nil>
 	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Alice","last":"Archer"}}
 	// {"age":22,"fruits":["apple","banana"],"name":"Alice Archer"}
-	// {"age":22,"fruits":["apple","lemon"],"name":"Alice Archer"}
-	// {"age":22,"fruits":["apple","lemon","melon"],"name":"Alice Archer"}
+	// Age: 22, error: <nil>
+	// {"age":23,"fruits":["apple","banana"],"name":"Alice Archer"}
+	// {"age":23,"fruits":["apple","lemon"],"name":"Alice Archer"}
+	// {"age":23,"fruits":["apple","lemon","melon"],"name":"Alice Archer"}
 }
 
 func ExampleGet() {
