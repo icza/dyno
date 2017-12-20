@@ -63,7 +63,7 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 
 // GetInt returns an int value denoted by the path.
 //
-// If path is empty or nil, v is returned.
+// If path is empty or nil, v is returned as an int.
 func GetInt(v interface{}, path ...interface{}) (int, error) {
 	v, err := Get(v, path...)
 	if err != nil {
@@ -74,6 +74,21 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 		return 0, fmt.Errorf("expected int, got: %T", v)
 	}
 	return i, nil
+}
+
+// GetString returns a string value denoted by the path.
+//
+// If path is empty or nil, v is returned as a string.
+func GetString(v interface{}, path ...interface{}) (string, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return "", err
+	}
+	s, ok := v.(string)
+	if !ok {
+		return "", fmt.Errorf("expected string, got: %T", v)
+	}
+	return s, nil
 }
 
 // SGet returns a value denoted by the path consisting of only string keys.

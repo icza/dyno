@@ -22,10 +22,11 @@ var (
 			"x": 1,
 			"y": 2,
 		},
-		"pi": mi,
-		"ns": []interface{}{1.1, 2.2, 3.3},
-		"b":  2,
-		"s":  s,
+		"pi":  mi,
+		"ns":  []interface{}{1.1, 2.2, 3.3},
+		"b":   2,
+		"s":   s,
+		"str": "abc",
 	}
 )
 
@@ -196,6 +197,56 @@ func TestGetInt(t *testing.T) {
 
 	for _, c := range cases {
 		value, err := GetInt(c.v, c.path...)
+		if value != c.value {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestGetString(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value string        // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on string",
+			v:     "a",
+			path:  []interface{}{},
+			value: "a",
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"str"},
+			value: "abc",
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: "",
+			isErr: true,
+		},
+		{
+			title: "expected string error",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: "",
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetString(c.v, c.path...)
 		if value != c.value {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}
