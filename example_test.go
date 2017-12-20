@@ -20,24 +20,31 @@ func Example() {
 		},
 	}
 
-	printPerson := func(err error) {
+	// pp prints the person
+	pp := func(err error) {
 		json.NewEncoder(os.Stdout).Encode(person) // Output JSON
 		if err != nil {
 			fmt.Println("ERROR:", err)
 		}
 	}
 
-	printPerson(nil)
+	// Print initial person and its first name:
+	pp(nil)
 	v, err := dyno.Get(person, "name", "first")
 	fmt.Printf("First name: %v, error: %v\n", v, err)
 
-	printPerson(dyno.Set(person, "Alice", "name", "first")) // Change first name
-	printPerson(dyno.Set(person, "Alice Archer", "name"))   // Change complete name to a single string
+	// Change first name:
+	pp(dyno.Set(person, "Alice", "name", "first"))
+	// Change complete name from map to to a single string:
+	pp(dyno.Set(person, "Alice Archer", "name"))
+	// Print and increment age:
 	age, err := dyno.GetInt(person, "age")
 	fmt.Printf("Age: %v, error: %v\n", age, err)
-	printPerson(dyno.Set(person, age+1, "age"))         // Increment age
-	printPerson(dyno.Set(person, "lemon", "fruits", 1)) // Change a fruits slice element
-	printPerson(dyno.Append(person, "melon", "fruits")) // Add a new fruit
+	pp(dyno.Set(person, age+1, "age"))
+	// Change a fruits slice element:
+	pp(dyno.Set(person, "lemon", "fruits", 1))
+	// Add a new fruit:
+	pp(dyno.Append(person, "melon", "fruits"))
 
 	// Output:
 	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Bob","last":"Archer"}}
