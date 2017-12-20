@@ -8,6 +8,46 @@ import (
 	"github.com/icza/dyno"
 )
 
+func Example() {
+	person := map[string]interface{}{
+		"name": map[string]interface{}{
+			"first": "Bob",
+			"last":  "Archer",
+		},
+		"age": 22,
+		"fruits": []interface{}{
+			"apple", "banana",
+		},
+	}
+
+	printPerson := func(err error) {
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		} else {
+			// Use JSON output so map entry order is consistent:
+			json.NewEncoder(os.Stdout).Encode(person)
+		}
+	}
+
+	printPerson(nil)
+
+	v, err := dyno.Get(person, "name", "first")
+	fmt.Println(v, err)
+
+	printPerson(dyno.Set(person, "Alice", "name", "first"))
+	printPerson(dyno.Set(person, "Alice Archer", "name"))
+	printPerson(dyno.Set(person, "lemon", "fruits", 1))
+	printPerson(dyno.Append(person, "melon", "fruits"))
+
+	// Output:
+	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Bob","last":"Archer"}}
+	// Bob <nil>
+	// {"age":22,"fruits":["apple","banana"],"name":{"first":"Alice","last":"Archer"}}
+	// {"age":22,"fruits":["apple","banana"],"name":"Alice Archer"}
+	// {"age":22,"fruits":["apple","lemon"],"name":"Alice Archer"}
+	// {"age":22,"fruits":["apple","lemon","melon"],"name":"Alice Archer"}
+}
+
 func ExampleGet() {
 	m := map[string]interface{}{
 		"a": 1,
@@ -16,32 +56,22 @@ func ExampleGet() {
 		},
 	}
 
-	printResults := func(v interface{}, err error) {
-		if err != nil {
-			fmt.Println("ERROR:", err)
-		} else {
-			fmt.Println(v)
-		}
+	printValue := func(v interface{}, err error) {
+		fmt.Printf("Value: %-5v, Error: %v\n", v, err)
 	}
 
-	v, err := dyno.Get(m, "a")
-	printResults(v, err)
-
-	v, err = dyno.Get(m, "b", 3, 1)
-	printResults(v, err)
-
-	v, err = dyno.Get(m, "x")
-	printResults(v, err)
+	printValue(dyno.Get(m, "a"))
+	printValue(dyno.Get(m, "b", 3, 1))
+	printValue(dyno.Get(m, "x"))
 
 	sl, _ := dyno.Get(m, "b", 3) // This is: []interface{}{1, "two", 3.3}
-	v, err = dyno.Get(sl, 4)
-	printResults(v, err)
+	printValue(dyno.Get(sl, 4))
 
 	// Output:
-	// 1
-	// two
-	// ERROR: missing key: x (path element idx: 0)
-	// ERROR: index out of range: 4 (path element idx: 0)
+	// Value: 1    , Error: <nil>
+	// Value: two  , Error: <nil>
+	// Value: <nil>, Error: missing key: x (path element idx: 0)
+	// Value: <nil>, Error: index out of range: 4 (path element idx: 0)
 }
 
 func ExampleSet() {
@@ -52,7 +82,7 @@ func ExampleSet() {
 		},
 	}
 
-	printResults := func(err error) {
+	printMap := func(err error) {
 		if err != nil {
 			fmt.Println("ERROR:", err)
 		} else {
@@ -61,18 +91,12 @@ func ExampleSet() {
 		}
 	}
 
-	err := dyno.Set(m, 2, "a")
-	printResults(err)
-
-	err = dyno.Set(m, "owt", "b", "3", 1)
-	printResults(err)
-
-	err = dyno.Set(m, 1, "x")
-	printResults(err)
+	printMap(dyno.Set(m, 2, "a"))
+	printMap(dyno.Set(m, "owt", "b", "3", 1))
+	printMap(dyno.Set(m, 1, "x"))
 
 	sl, _ := dyno.Get(m, "b", "3") // This is: []interface{}{1, "owt", 3.3}
-	err = dyno.Set(sl, 1, 4)
-	printResults(err)
+	printMap(dyno.Set(sl, 1, 4))
 
 	// Output:
 	// {"a":2,"b":{"3":[1,"two",3.3]}}
@@ -88,23 +112,17 @@ func ExampleAppend() {
 		},
 	}
 
-	printResults := func(err error) {
+	printMap := func(err error) {
 		if err != nil {
 			fmt.Println("ERROR:", err)
 		} else {
-			// Use JSON output so map entry order is consistent:
 			fmt.Println(m)
 		}
 	}
 
-	err := dyno.Append(m, 4, "a")
-	printResults(err)
-
-	err = dyno.Append(m, 9, "a", 2)
-	printResults(err)
-
-	err = dyno.Append(m, 1, "x")
-	printResults(err)
+	printMap(dyno.Append(m, 4, "a"))
+	printMap(dyno.Append(m, 9, "a", 2))
+	printMap(dyno.Append(m, 1, "x"))
 
 	// Output:
 	// map[a:[3 2 [1 two 3.3] 4]]
