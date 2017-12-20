@@ -4,12 +4,9 @@ Package dyno is a utility to work with dynamic objects at ease.
 Primary goal is to easily handle dynamic objects and arrays (and a mixture of these)
 that are the result of unmarshaling a JSON or YAML text into an interface{}
 for example. When unmarshaling into interface{}, libraries usually choose
-map[string]interface{} or map[interface{}]interface{} to represent objects,
-and []interface{} to represent arrays.
-
-Package dyno supports dynamic objects that are a mixture of interface{}
-slices and maps with interface{} values and string or interface{} keys
-in any depth and combination.
+either map[string]interface{} or map[interface{}]interface{} to represent objects,
+and []interface{} to represent arrays. Package dyno supports a mixture of
+these in any depth and combination.
 
 When operating on a dynamic object, you designate a value you're interested
 in by specifying a path. A path is a navigation; it is a series of map keys
@@ -21,6 +18,7 @@ package dyno
 import "fmt"
 
 // Get returns a value denoted by the path.
+//
 // If path is empty or nil, v is returned.
 func Get(v interface{}, path ...interface{}) (interface{}, error) {
 	for i, el := range path {
@@ -96,7 +94,10 @@ func SGet(m map[string]interface{}, path ...string) (interface{}, error) {
 }
 
 // Set sets a map or slice element denoted by the path.
-// The map or slice whose element is to be set must already exist.
+//
+// The last element of the path must be a map key or a slice index, and the
+// preceeding path must denote a map or a slice which must already exist.
+//
 // Path cannot be empty or nil, else an error is returned.
 func Set(v interface{}, value interface{}, path ...interface{}) error {
 	if len(path) == 0 {
@@ -148,10 +149,12 @@ func Set(v interface{}, value interface{}, path ...interface{}) error {
 // SSet is an optimized and specialized version of the general Set. The
 // path may only contain string map keys (no slice indices), and each
 // value associated with the keys (being the path elements) must also be
-// maps with string keys, except the value associated with the last path
+// a maps with string keys, except the value associated with the last path
 // element.
 //
-// The map or slice whose element is to be set must already exist.
+// The map denoted by the preceeding path before the last path element
+// must already exist.
+//
 // Path cannot be empty or nil, else an error is returned.
 func SSet(m map[string]interface{}, value interface{}, path ...string) error {
 	if len(path) == 0 {
