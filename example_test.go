@@ -35,14 +35,18 @@ func Example() {
 
 	// Change first name:
 	pp(dyno.Set(person, "Alice", "name", "first"))
-	// Change complete name from map to to a single string:
+
+	// Change complete name from map to a single string:
 	pp(dyno.Set(person, "Alice Archer", "name"))
+
 	// Print and increment age:
 	age, err := dyno.GetInt(person, "age")
 	fmt.Printf("Age: %v, error: %v\n", age, err)
 	pp(dyno.Set(person, age+1, "age"))
+
 	// Change a fruits slice element:
 	pp(dyno.Set(person, "lemon", "fruits", 1))
+
 	// Add a new fruit:
 	pp(dyno.Append(person, "melon", "fruits"))
 
