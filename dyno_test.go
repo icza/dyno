@@ -290,13 +290,25 @@ func TestGetInteger(t *testing.T) {
 			value: 1,
 		},
 		{
+			title: "success from float64",
+			v:     float64(1.1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from float32",
+			v:     float32(1.1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
 			title: "success from string",
 			v:     "1",
 			path:  []interface{}{},
 			value: 1,
 		},
 		{
-			title: "success from Int64 method",
+			title: "success from Int64() method",
 			v:     json.Number("1"),
 			path:  []interface{}{},
 			value: 1,
@@ -371,6 +383,140 @@ func TestGetFloat64(t *testing.T) {
 
 	for _, c := range cases {
 		value, err := GetFloat64(c.v, c.path...)
+		if value != c.value {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestGetFloating(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value float64       // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on int",
+			v:     1,
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: 1,
+		},
+		{
+			title: "success from float64",
+			v:     float64(1.1),
+			path:  []interface{}{},
+			value: 1.1,
+		},
+		{
+			title: "success from float32",
+			v:     float32(1.1),
+			path:  []interface{}{},
+			value: float64(float32(1.1)),
+		},
+		{
+			title: "success from int64",
+			v:     int64(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from int",
+			v:     int(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from int32",
+			v:     int32(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from int16",
+			v:     int16(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from int8",
+			v:     int8(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from uint",
+			v:     uint(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from uint64",
+			v:     uint64(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from uint32",
+			v:     uint32(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from uint16",
+			v:     uint16(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from uint8",
+			v:     uint8(1),
+			path:  []interface{}{},
+			value: 1,
+		},
+		{
+			title: "success from string",
+			v:     "1.1",
+			path:  []interface{}{},
+			value: 1.1,
+		},
+		{
+			title: "success from Float64() method",
+			v:     json.Number("1.1"),
+			path:  []interface{}{},
+			value: 1.1,
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: 0,
+			isErr: true,
+		},
+		{
+			title: "expected some form of floating point error",
+			v:     ms,
+			path:  []interface{}{"s"},
+			value: 0,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetFloating(c.v, c.path...)
 		if value != c.value {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}

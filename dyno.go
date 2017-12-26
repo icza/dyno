@@ -81,7 +81,8 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 // This function accepts many different types and converts them to int64, namely:
 //     -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
 //      (which implies the aliases byte and rune too)
-//     -string (fmt.Sscanf() will be used for conversion)
+//     -floating point types (float64, float32)
+//     -string (fmt.Sscan() will be used for parsing)
 //     -any type with an Int64() (int64, error) method (e.g. json.Number)
 //
 // If path is empty or nil, v is returned as an int64.
@@ -112,6 +113,10 @@ func GetInteger(v interface{}, path ...interface{}) (int64, error) {
 		return int64(i), nil
 	case uint8:
 		return int64(i), nil
+	case float64:
+		return int64(i), nil
+	case float32:
+		return int64(i), nil
 	case string:
 		var n int64
 		_, err := fmt.Sscan(i, &n)
@@ -121,7 +126,7 @@ func GetInteger(v interface{}, path ...interface{}) (int64, error) {
 	}:
 		return i.Int64()
 	default:
-		return 0, fmt.Errorf("expected some form of integer value, got: %T", v)
+		return 0, fmt.Errorf("expected some form of integer number, got: %T", v)
 	}
 }
 
@@ -138,6 +143,60 @@ func GetFloat64(v interface{}, path ...interface{}) (float64, error) {
 		return 0, fmt.Errorf("expected float64 value, got: %T", v)
 	}
 	return f, nil
+}
+
+// GetFloating returns a float64 value denoted by the path.
+//
+// This function accepts many different types and converts them to float64, namely:
+//     -floating point types (float64, float32)
+//     -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
+//      (which implies the aliases byte and rune too)
+//     -string (fmt.Sscan() will be used for parsing)
+//     -any type with a Float64() (float64, error) method (e.g. json.Number)
+//
+// If path is empty or nil, v is returned as an int64.
+func GetFloating(v interface{}, path ...interface{}) (float64, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return 0, err
+	}
+
+	switch f := v.(type) {
+	case float64:
+		return f, nil
+	case float32:
+		return float64(f), nil
+	case int64:
+		return float64(f), nil
+	case int:
+		return float64(f), nil
+	case int32:
+		return float64(f), nil
+	case int16:
+		return float64(f), nil
+	case int8:
+		return float64(f), nil
+	case uint:
+		return float64(f), nil
+	case uint64:
+		return float64(f), nil
+	case uint32:
+		return float64(f), nil
+	case uint16:
+		return float64(f), nil
+	case uint8:
+		return float64(f), nil
+	case string:
+		var n float64
+		_, err := fmt.Sscan(f, &n)
+		return n, err
+	case interface {
+		Float64() (float64, error)
+	}:
+		return f.Float64()
+	default:
+		return 0, fmt.Errorf("expected some form of floating point number, got: %T", v)
+	}
 }
 
 // GetString returns a string value denoted by the path.
