@@ -79,11 +79,11 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 // GetInteger returns an int64 value denoted by the path.
 //
 // This function accepts many different types and converts them to int64, namely:
-//     -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
-//      (which implies the aliases byte and rune too)
-//     -floating point types (float64, float32)
-//     -string (fmt.Sscan() will be used for parsing)
-//     -any type with an Int64() (int64, error) method (e.g. json.Number)
+//   -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
+//    (which implies the aliases byte and rune too)
+//   -floating point types (float64, float32)
+//   -string (fmt.Sscan() will be used for parsing)
+//   -any type with an Int64() (int64, error) method (e.g. json.Number)
 //
 // If path is empty or nil, v is returned as an int64.
 func GetInteger(v interface{}, path ...interface{}) (int64, error) {
@@ -148,11 +148,11 @@ func GetFloat64(v interface{}, path ...interface{}) (float64, error) {
 // GetFloating returns a float64 value denoted by the path.
 //
 // This function accepts many different types and converts them to float64, namely:
-//     -floating point types (float64, float32)
-//     -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
-//      (which implies the aliases byte and rune too)
-//     -string (fmt.Sscan() will be used for parsing)
-//     -any type with a Float64() (float64, error) method (e.g. json.Number)
+//  -floating point types (float64, float32)
+//  -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
+//   (which implies the aliases byte and rune too)
+//  -string (fmt.Sscan() will be used for parsing)
+//  -any type with a Float64() (float64, error) method (e.g. json.Number)
 //
 // If path is empty or nil, v is returned as an int64.
 func GetFloating(v interface{}, path ...interface{}) (float64, error) {
