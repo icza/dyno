@@ -76,10 +76,59 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 	return i, nil
 }
 
-// GetFloat returns a float64 value denoted by the path.
+// GetInteger returns an int64 value denoted by the path.
+//
+// This function accepts many different types and converts them to int64, namely:
+//     -integer types (int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64)
+//      (which implies the aliases byte and rune too)
+//     -string (fmt.Sscanf() will be used for conversion)
+//     -any type with an Int64() (int64, error) method (e.g. json.Number)
+//
+// If path is empty or nil, v is returned as an int64.
+func GetInteger(v interface{}, path ...interface{}) (int64, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return 0, err
+	}
+
+	switch i := v.(type) {
+	case int64:
+		return i, nil
+	case int:
+		return int64(i), nil
+	case int32:
+		return int64(i), nil
+	case int16:
+		return int64(i), nil
+	case int8:
+		return int64(i), nil
+	case uint:
+		return int64(i), nil
+	case uint64:
+		return int64(i), nil
+	case uint32:
+		return int64(i), nil
+	case uint16:
+		return int64(i), nil
+	case uint8:
+		return int64(i), nil
+	case string:
+		var n int64
+		_, err := fmt.Sscan(i, &n)
+		return n, err
+	case interface {
+		Int64() (int64, error)
+	}:
+		return i.Int64()
+	default:
+		return 0, fmt.Errorf("expected some form of integer value, got: %T", v)
+	}
+}
+
+// GetFloat64 returns a float64 value denoted by the path.
 //
 // If path is empty or nil, v is returned as a float64.
-func GetFloat(v interface{}, path ...interface{}) (float64, error) {
+func GetFloat64(v interface{}, path ...interface{}) (float64, error) {
 	v, err := Get(v, path...)
 	if err != nil {
 		return 0, err
