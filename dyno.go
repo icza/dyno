@@ -29,7 +29,7 @@ func Get(v interface{}, path ...interface{}) (interface{}, error) {
 		case map[string]interface{}:
 			key, ok := el.(string)
 			if !ok {
-				return nil, fmt.Errorf("expected string path element, got: %T (element idx: %d)", el, i)
+				return nil, fmt.Errorf("expected string path element, got: %T (path element idx: %d)", el, i)
 			}
 			v, ok = node[key]
 			if !ok {
@@ -71,7 +71,7 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 	}
 	i, ok := v.(int)
 	if !ok {
-		return 0, fmt.Errorf("expected int, got: %T", v)
+		return 0, fmt.Errorf("expected int value, got: %T", v)
 	}
 	return i, nil
 }
@@ -86,7 +86,7 @@ func GetFloat(v interface{}, path ...interface{}) (float64, error) {
 	}
 	f, ok := v.(float64)
 	if !ok {
-		return 0, fmt.Errorf("expected float64, got: %T", v)
+		return 0, fmt.Errorf("expected float64 value, got: %T", v)
 	}
 	return f, nil
 }
@@ -101,7 +101,7 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 	}
 	s, ok := v.(string)
 	if !ok {
-		return "", fmt.Errorf("expected string, got: %T", v)
+		return "", fmt.Errorf("expected string value, got: %T", v)
 	}
 	return s, nil
 }
@@ -167,7 +167,7 @@ func Set(v interface{}, value interface{}, path ...interface{}) error {
 	case map[string]interface{}:
 		key, ok := el.(string)
 		if !ok {
-			return fmt.Errorf("expected string path element, got: %T (element idx: %d)", el, i)
+			return fmt.Errorf("expected string path element, got: %T (path element idx: %d)", el, i)
 		}
 		node[key] = value
 
