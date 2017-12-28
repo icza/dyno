@@ -66,7 +66,7 @@ func Example() {
 // Example_jsonEdit shows a simple example how JSON can be edited.
 // The password placed in the JSON is masked out.
 func Example_jsonEdit() {
-	src := `{"login":{"password":"secret","user":"test-1"},"name":"test-comp"}`
+	src := `{"login":{"password":"secret","user":"test"},"name":"compA"}`
 	fmt.Printf("Input JSON:  %s\n", src)
 
 	var v interface{}
@@ -75,10 +75,10 @@ func Example_jsonEdit() {
 	}
 
 	user, err := dyno.Get(v, "login", "user")
-	fmt.Printf("User:        %s, error: %v\n", user, err)
+	fmt.Printf("User:        %-6s, error: %v\n", user, err)
 
 	password, err := dyno.Get(v, "login", "password")
-	fmt.Printf("Password:    %s, error: %v\n", password, err)
+	fmt.Printf("Password:    %-6s, error: %v\n", password, err)
 
 	// Edit (mask out) password:
 	if err = dyno.Set(v, "xxx", "login", "password"); err != nil {
@@ -89,10 +89,10 @@ func Example_jsonEdit() {
 	fmt.Printf("Edited JSON: %s, error: %v\n", edited, err)
 
 	// Output:
-	// Input JSON:  {"login":{"password":"secret","user":"test-1"},"name":"test-comp"}
-	// User:        test-1, error: <nil>
+	// Input JSON:  {"login":{"password":"secret","user":"test"},"name":"compA"}
+	// User:        test  , error: <nil>
 	// Password:    secret, error: <nil>
-	// Edited JSON: {"login":{"password":"xxx","user":"test-1"},"name":"test-comp"}, error: <nil>
+	// Edited JSON: {"login":{"password":"xxx","user":"test"},"name":"compA"}, error: <nil>
 }
 
 func ExampleGet() {

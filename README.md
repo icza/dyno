@@ -27,7 +27,7 @@ the `ConvertMapI2MapS` converter function.
 The implementation does not use reflection at all, so performance is rather good.
 
 Let's see a simple example editing a JSON text to mask out a password. This is
-a simplified version of the `Example_jsonEdit` example function:
+a simplified version of the [`Example_jsonEdit`](https://godoc.org/github.com/icza/dyno#example-package--JsonEdit) example function:
 
 	src := `{"login":{"password":"secret","user":"test"},"name":"compA"}`
 	var v interface{}
