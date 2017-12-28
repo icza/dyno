@@ -8,6 +8,8 @@ import (
 	"github.com/icza/dyno"
 )
 
+// Example shows a few of dyno's features, such as getting, setting and appending
+// values to / from a dynamic object.
 func Example() {
 	person := map[string]interface{}{
 		"name": map[string]interface{}{
@@ -59,6 +61,38 @@ func Example() {
 	// {"age":23,"fruits":["apple","banana"],"name":"Alice Archer"}
 	// {"age":23,"fruits":["apple","lemon"],"name":"Alice Archer"}
 	// {"age":23,"fruits":["apple","lemon","melon"],"name":"Alice Archer"}
+}
+
+// Example_jsonEdit shows a simple example how JSON can be edited.
+// The password placed in the JSON is masked out.
+func Example_jsonEdit() {
+	src := `{"login":{"password":"secret","user":"test-1"},"name":"test-comp"}`
+	fmt.Printf("Input JSON:  %s\n", src)
+
+	var v interface{}
+	if err := json.Unmarshal([]byte(src), &v); err != nil {
+		panic(err)
+	}
+
+	user, err := dyno.Get(v, "login", "user")
+	fmt.Printf("User:        %s, error: %v\n", user, err)
+
+	password, err := dyno.Get(v, "login", "password")
+	fmt.Printf("Password:    %s, error: %v\n", password, err)
+
+	// Edit (mask out) password:
+	if err = dyno.Set(v, "xxx", "login", "password"); err != nil {
+		fmt.Printf("Failed to set password: %v\n", err)
+	}
+
+	edited, err := json.Marshal(v)
+	fmt.Printf("Edited JSON: %s, error: %v\n", edited, err)
+
+	// Output:
+	// Input JSON:  {"login":{"password":"secret","user":"test-1"},"name":"test-comp"}
+	// User:        test-1, error: <nil>
+	// Password:    secret, error: <nil>
+	// Edited JSON: {"login":{"password":"xxx","user":"test-1"},"name":"test-comp"}, error: <nil>
 }
 
 func ExampleGet() {

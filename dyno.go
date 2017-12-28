@@ -16,7 +16,26 @@ Should you need to marshal a dynamic object to JSON which contains maps with
 interface{} key type (which is not supported by encoding/json), you may use
 the ConvertMapI2MapS converter function.
 
-The implementation does not uses reflection at all, so performance is rather good.
+The implementation does not use reflection at all, so performance is rather good.
+
+Let's see a simple example editing a JSON text to mask out a password. This is
+a simplified version of the Example_jsonEdit example function:
+
+	src := `{"login":{"password":"secret","user":"test"},"name":"compA"}`
+	var v interface{}
+	if err := json.Unmarshal([]byte(src), &v); err != nil {
+		panic(err)
+	}
+	// Edit (mask out) password:
+	if err = dyno.Set(v, "xxx", "login", "password"); err != nil {
+		fmt.Printf("Failed to set password: %v\n", err)
+	}
+	edited, err := json.Marshal(v)
+	fmt.Printf("Edited JSON: %s, error: %v\n", edited, err)
+
+Output will be:
+
+	Edited JSON: {"login":{"password":"xxx","user":"test"},"name":"compA"}, error: <nil>
 
 */
 package dyno
