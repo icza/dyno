@@ -29,7 +29,7 @@ The implementation does not use reflection at all, so performance is rather good
 Let's see a simple example editing a JSON text to mask out a password. This is
 a simplified version of the [`Example_jsonEdit`](https://godoc.org/github.com/icza/dyno#example-package--JsonEdit) example function:
 
-	src := `{"login":{"password":"secret","user":"bob"},"name":"compA"}`
+	src := `{"login":{"password":"secret","user":"bob"},"name":"cmpA"}`
 	var v interface{}
 	if err := json.Unmarshal([]byte(src), &v); err != nil {
 		panic(err)
@@ -43,4 +43,4 @@ a simplified version of the [`Example_jsonEdit`](https://godoc.org/github.com/ic
 
 Output will be:
 
-	Edited JSON: {"login":{"password":"xxx","user":"bob"},"name":"compA"}, error: <nil>
+	Edited JSON: {"login":{"password":"xxx","user":"bob"},"name":"cmpA"}, error: <nil>
