@@ -255,7 +255,7 @@ func SGet(m map[string]interface{}, path ...string) (interface{}, error) {
 // Set sets a map or slice element denoted by the path.
 //
 // The last element of the path must be a map key or a slice index, and the
-// preceeding path must denote a map or a slice respectively which must already exist.
+// preceding path must denote a map or a slice respectively which must already exist.
 //
 // Path cannot be empty or nil, else an error is returned.
 func Set(v interface{}, value interface{}, path ...interface{}) error {
@@ -311,7 +311,7 @@ func Set(v interface{}, value interface{}, path ...interface{}) error {
 // a maps with string keys, except the value associated with the last path
 // element.
 //
-// The map denoted by the preceeding path before the last path element
+// The map denoted by the preceding path before the last path element
 // must already exist.
 //
 // Path cannot be empty or nil, else an error is returned.
