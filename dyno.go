@@ -12,8 +12,11 @@ When operating on a dynamic object, you designate a value you're interested
 in by specifying a path. A path is a navigation; it is a series of map keys
 and int slice indices that tells how to get to the value.
 
-The implementation does not uses reflection at all (only type assertions), so
-performance is rather good.
+Should you need to marshal a dynamic object to JSON which contains maps with
+interface{} key type (which is not supported by encoding/json), you may use
+the ConvertMapI2MapS converter function.
+
+The implementation does not uses reflection at all, so performance is rather good.
 
 */
 package dyno
