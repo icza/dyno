@@ -66,7 +66,7 @@ func Example() {
 // Example_jsonEdit shows a simple example how JSON can be edited.
 // The password placed in the JSON is masked out.
 func Example_jsonEdit() {
-	src := `{"login":{"password":"secret","user":"bob"},"name":"compA"}`
+	src := `{"login":{"password":"secret","user":"bob"},"name":"cmpA"}`
 	fmt.Printf("Input JSON:  %s\n", src)
 
 	var v interface{}
@@ -89,10 +89,10 @@ func Example_jsonEdit() {
 	fmt.Printf("Edited JSON: %s, error: %v\n", edited, err)
 
 	// Output:
-	// Input JSON:  {"login":{"password":"secret","user":"bob"},"name":"compA"}
+	// Input JSON:  {"login":{"password":"secret","user":"bob"},"name":"cmpA"}
 	// User:        bob   , error: <nil>
 	// Password:    secret, error: <nil>
-	// Edited JSON: {"login":{"password":"xxx","user":"bob"},"name":"compA"}, error: <nil>
+	// Edited JSON: {"login":{"password":"xxx","user":"bob"},"name":"cmpA"}, error: <nil>
 }
 
 func ExampleGet() {
