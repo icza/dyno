@@ -141,3 +141,24 @@ func ExampleAppend() {
 	// map[a:[3 2 [1 two 3.3 9] 4]]
 	// ERROR: missing key: x (path element idx: 0)
 }
+
+func ExampleConvertMapI2MapS() {
+	m := map[interface{}]interface{}{
+		1:         "one",
+		"numbers": []interface{}{2, 3, 4.4},
+	}
+
+	// m cannot be marshaled using encoding/json:
+	data, err := json.Marshal(m)
+	fmt.Printf("JSON: %q, error: %v\n", data, err)
+
+	m2 := dyno.ConvertMapI2MapS(m)
+
+	// But m2 can be:
+	data, err = json.Marshal(m2)
+	fmt.Printf("JSON: %s, error: %v\n", data, err)
+
+	// Output:
+	// JSON: "", error: json: unsupported type: map[interface {}]interface {}
+	// JSON: {"1":"one","numbers":[2,3,4.4]}, error: <nil>
+}
