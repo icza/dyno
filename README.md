@@ -32,11 +32,11 @@ The implementation does not use reflection at all, so performance is rather good
 
 - Get a typed value with built-in conversion / parsing: [GetInteger](https://godoc.org/github.com/icza/dyno#GetInteger), [GetFloating](https://godoc.org/github.com/icza/dyno#GetFloating)
 
-- Specialized get for maps with string keys: [SGet](https://godoc.org/github.com/icza/dyno#SGet)
+- Specialized get for maps with `string` keys: [SGet](https://godoc.org/github.com/icza/dyno#SGet)
 
 - Set a value denoted by a path: [Set](https://godoc.org/github.com/icza/dyno#Set)
 
-- Specialized set for maps with string keys: [SSet](https://godoc.org/github.com/icza/dyno#SSet)
+- Specialized set for maps with `string` keys: [SSet](https://godoc.org/github.com/icza/dyno#SSet)
 
 - Append a value to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append)
 
