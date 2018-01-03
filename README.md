@@ -40,7 +40,7 @@ The implementation does not use reflection at all, so performance is rather good
 
 - Append a value to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append)
 
-- Convert map values with interface{} keys to maps with string keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
+- Convert map values with `interface{}` keys to maps with `string` keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
 
 ### Example
 
