@@ -26,6 +26,24 @@ the `ConvertMapI2MapS` converter function.
 
 The implementation does not use reflection at all, so performance is rather good.
 
+### Supported Operations
+
+- Get a (typed) value denoted by a path: [Get](https://godoc.org/github.com/icza/dyno#Get), [GetInt](https://godoc.org/github.com/icza/dyno#GetInt), [GetString](https://godoc.org/github.com/icza/dyno#GetString)
+
+- Get a typed value with built-in conversion / parsing: [GetInteger](https://godoc.org/github.com/icza/dyno#GetInteger), [GetFloating](https://godoc.org/github.com/icza/dyno#GetFloating)
+
+- Specialized get for maps with string keys: [SGet](https://godoc.org/github.com/icza/dyno#SGet)
+
+- Set a value denoted by a path: [Set](https://godoc.org/github.com/icza/dyno#Set)
+
+- Specialized set for maps with string keys: [SSet](https://godoc.org/github.com/icza/dyno#SSet)
+
+- Append a value to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append)
+
+- Convert map values with interface{} keys to maps with string keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
+
+### Example
+
 Let's see a simple example editing a JSON text to mask out a password. This is
 a simplified version of the [`Example_jsonEdit`](https://godoc.org/github.com/icza/dyno#example-package--JsonEdit) example function:
 
