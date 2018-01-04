@@ -176,6 +176,19 @@ func ExampleAppend() {
 	// ERROR: missing key: x (path element idx: 0)
 }
 
+func ExampleAppendMore() {
+	m := map[string]interface{}{
+		"ints": []interface{}{
+			1, 2,
+		},
+	}
+	err := dyno.AppendMore(m, []interface{}{3, 4, 5}, "ints")
+	fmt.Println(m, err)
+
+	// Output:
+	// map[ints:[1 2 3 4 5]] <nil>
+}
+
 func ExampleConvertMapI2MapS() {
 	m := map[interface{}]interface{}{
 		1:         "one",
