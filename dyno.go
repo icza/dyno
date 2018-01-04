@@ -408,7 +408,7 @@ func AppendMore(v interface{}, values []interface{}, path ...interface{}) error 
 // Delete deletes a key from a map or an element from a slice denoted by the path.
 //
 // Deleting a non-existing map key is a no-op. Attempting to delete a slice
-// element with invalid index is an error.
+// element from a slice with invalid index is an error.
 //
 // Path cannot be empty or nil if v itself is a slice, else an error is returned.
 func Delete(v interface{}, key interface{}, path ...interface{}) error {

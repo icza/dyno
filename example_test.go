@@ -189,6 +189,29 @@ func ExampleAppendMore() {
 	// map[ints:[1 2 3 4 5]] <nil>
 }
 
+func ExampleDelete() {
+	m := map[string]interface{}{
+		"name": "Bob",
+		"ints": []interface{}{
+			1, 2, 3,
+		},
+	}
+
+	err := dyno.Delete(m, "name")
+	fmt.Println(m, err)
+
+	err = dyno.Delete(m, 1, "ints")
+	fmt.Println(m, err)
+
+	err = dyno.Delete(m, "ints")
+	fmt.Println(m, err)
+
+	// Output:
+	// map[ints:[1 2 3]] <nil>
+	// map[ints:[1 3]] <nil>
+	// map[] <nil>
+}
+
 func ExampleConvertMapI2MapS() {
 	m := map[interface{}]interface{}{
 		1:         "one",
