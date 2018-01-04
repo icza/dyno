@@ -5,8 +5,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/icza/dyno)](https://goreportcard.com/report/github.com/icza/dyno)
 [![codecov](https://codecov.io/gh/icza/dyno/branch/master/graph/badge.svg)](https://codecov.io/gh/icza/dyno)
 
-_Foreword: This package is in an **experimental** phase and is a work-in-progress._
-
 Package dyno is a utility to work with _dynamic objects_ at ease.
 
 Primary goal is to easily handle dynamic objects and arrays (and a mixture of these)
@@ -38,7 +36,7 @@ The implementation does not use reflection at all, so performance is rather good
 
 - Specialized set for maps with `string` keys: [SSet](https://godoc.org/github.com/icza/dyno#SSet)
 
-- Append a value to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append)
+- Append value(s) to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append), [AppendMore](https://godoc.org/github.com/icza/dyno#AppendMore)
 
 - Convert map values with `interface{}` keys to maps with `string` keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
 
