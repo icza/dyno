@@ -38,6 +38,8 @@ The implementation does not use reflection at all, so performance is rather good
 
 - Append value(s) to a slice denoted by a path: [Append](https://godoc.org/github.com/icza/dyno#Append), [AppendMore](https://godoc.org/github.com/icza/dyno#AppendMore)
 
+- Delete a key from a map or an element from a slice denoted by a path: [Delete](https://godoc.org/github.com/icza/dyno#Delete)
+
 - Convert map values with `interface{}` keys to maps with `string` keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
 
 ### Example

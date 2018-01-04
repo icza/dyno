@@ -1071,6 +1071,143 @@ func TestAppendMore(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		key   interface{}   // Key (or index) to delete
+		path  []interface{} // path whose key or element to remove
+		exp   interface{}   // Expected result
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "delete non-existing map key with empty path",
+			v:     map[string]interface{}{"a": 1},
+			key:   "x",
+			path:  []interface{}{},
+			exp:   map[string]interface{}{"a": 1},
+		},
+		{
+			title: "delete non-existing map key",
+			v:     map[string]interface{}{"a": map[string]interface{}{"b": 1}},
+			key:   "x",
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": map[string]interface{}{"b": 1}},
+		},
+		{
+			title: "delete existing map element",
+			v:     map[string]interface{}{"a": 1, "b": 2},
+			key:   "a",
+			path:  []interface{}{},
+			exp:   map[string]interface{}{"b": 2},
+		},
+		{
+			title: "delete slice element",
+			v:     map[string]interface{}{"a": []interface{}{"b", 1}},
+			key:   0,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": []interface{}{1}},
+		},
+		{
+			title: "delete nested slice element",
+			v:     []interface{}{"a", []interface{}{"b", 1}},
+			key:   0,
+			path:  []interface{}{1},
+			exp:   []interface{}{"a", []interface{}{1}},
+		},
+		{
+			title: "delete non-existing map (mi) key with empty path",
+			v:     map[interface{}]interface{}{1: "a"},
+			key:   "x",
+			path:  []interface{}{},
+			exp:   map[interface{}]interface{}{1: "a"},
+		},
+		{
+			title: "delete non-existing map (mi) key",
+			v:     map[interface{}]interface{}{1: map[interface{}]interface{}{2: "b"}},
+			key:   "x",
+			path:  []interface{}{1},
+			exp:   map[interface{}]interface{}{1: map[interface{}]interface{}{2: "b"}},
+		},
+		{
+			title: "delete existing map (mi) element",
+			v:     map[interface{}]interface{}{1: "a", 2: "b"},
+			key:   1,
+			path:  []interface{}{},
+			exp:   map[interface{}]interface{}{2: "b"},
+		},
+
+		// Test errors:
+		{
+			title: "path cannot be empty if v is a slice",
+			v:     []interface{}{1, "a"},
+			key:   0,
+			path:  []interface{}{},
+			exp:   []interface{}{1, "a"},
+			isErr: true,
+		},
+		{
+			title: "internal Get call returns error",
+			v:     map[string]interface{}{"a": 1},
+			key:   2,
+			path:  []interface{}{"b", "c"},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "expected string key error",
+			v:     map[string]interface{}{"a": 1},
+			key:   2,
+			path:  []interface{}{},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+		{
+			title: "expected int key error",
+			v:     map[string]interface{}{"a": []interface{}{"b", 1}},
+			key:   "b",
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": []interface{}{"b", 1}},
+			isErr: true,
+		},
+		{
+			title: "index out of range error (negative)",
+			v:     map[string]interface{}{"a": []interface{}{"b", 1}},
+			key:   -1,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": []interface{}{"b", 1}},
+			isErr: true,
+		},
+		{
+			title: "index out of range error (too big)",
+			v:     map[string]interface{}{"a": []interface{}{"b", 1}},
+			key:   2,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": []interface{}{"b", 1}},
+			isErr: true,
+		},
+		{
+			title: "expected map or slice node error",
+			v:     map[string]interface{}{"a": 1},
+			key:   2,
+			path:  []interface{}{"a"},
+			exp:   map[string]interface{}{"a": 1},
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		err := Delete(c.v, c.key, c.path...)
+		if !reflect.DeepEqual(c.v, c.exp) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.v)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestConvertMapI2MapS(t *testing.T) {
 	cases := []struct {
 		title string      // Title of the test case

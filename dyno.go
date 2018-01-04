@@ -374,7 +374,7 @@ func Append(v interface{}, value interface{}, path ...interface{}) error {
 
 	s, ok := node.([]interface{})
 	if !ok {
-		return fmt.Errorf("expected slice node, got: %T (path element idx: %d)", node, len(path))
+		return fmt.Errorf("expected slice node, got: %T (path element idx: %d)", node, len(path)-1)
 	}
 
 	// Must set the new slice value:
@@ -403,6 +403,56 @@ func AppendMore(v interface{}, values []interface{}, path ...interface{}) error 
 
 	// Must set the new slice value:
 	return Set(v, append(s, values...), path...)
+}
+
+// Delete deletes a key from a map or an elemen from a slice value denoted by the path.
+//
+// Deleting a non-existing map key is a no-op. Attempting to delete an element
+// with invalid index is an error.
+//
+// Path cannot be empty or nil if v itself is a slice, else an error is returned.
+func Delete(v interface{}, key interface{}, path ...interface{}) error {
+	if len(path) == 0 {
+		if _, ok := v.([]interface{}); ok {
+			return fmt.Errorf("path cannot be empty if v is a slice")
+		}
+	}
+
+	node, err := Get(v, path...)
+	if err != nil {
+		return err
+	}
+
+	switch node2 := node.(type) {
+	case map[string]interface{}:
+		skey, ok := key.(string)
+		if !ok {
+			return fmt.Errorf("expected string key, got: %T", key)
+		}
+		delete(node2, skey)
+
+	case map[interface{}]interface{}:
+		delete(node2, key)
+
+	case []interface{}:
+		idx, ok := key.(int)
+		if !ok {
+			return fmt.Errorf("expected int key, got: %T", key)
+		}
+		if idx < 0 || idx >= len(node2) {
+			return fmt.Errorf("index out of range: %d", idx)
+		}
+		copy(node2[idx:], node2[idx+1:])
+		// Clear the emptied element:
+		node2[len(node2)-1] = nil
+		// Must set the new slice value:
+		return Set(v, node2[:len(node2)-1], path...)
+
+	default:
+		return fmt.Errorf("expected map or slice node, got: %T (path element idx: %d)", node, len(path)-1)
+	}
+
+	return nil
 }
 
 // ConvertMapI2MapS walks the given dynamic object recursively, and
