@@ -381,6 +381,30 @@ func Append(v interface{}, value interface{}, path ...interface{}) error {
 	return Set(v, append(s, value), path...)
 }
 
+// AppendMore appends values to a slice denoted by the path.
+//
+// The slice denoted by path must already exist.
+//
+// Path cannot be empty or nil, else an error is returned.
+func AppendMore(v interface{}, values []interface{}, path ...interface{}) error {
+	if len(path) == 0 {
+		return fmt.Errorf("path cannot be empty")
+	}
+
+	node, err := Get(v, path...)
+	if err != nil {
+		return err
+	}
+
+	s, ok := node.([]interface{})
+	if !ok {
+		return fmt.Errorf("expected slice node, got: %T (path element idx: %d)", node, len(path))
+	}
+
+	// Must set the new slice value:
+	return Set(v, append(s, values...), path...)
+}
+
 // ConvertMapI2MapS walks the given dynamic object recursively, and
 // converts maps with interface{} key type to maps with string key type.
 // This function comes handy if you want to marshal a dynamic object into

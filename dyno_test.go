@@ -964,6 +964,113 @@ func TestAppend(t *testing.T) {
 	}
 }
 
+func TestAppendMore(t *testing.T) {
+	cases := []struct {
+		title  string        // Title of the test case
+		v      interface{}   // Input dynamic object
+		values []interface{} // Values to append
+		path   []interface{} // path of slice to append to
+		exp    interface{}   // Expected result
+		isErr  bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "append to nil slice",
+			v: map[string]interface{}{
+				"a": []interface{}(nil),
+			},
+			values: []interface{}{1},
+			path:   []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{1},
+			},
+		},
+		{
+			title: "append nil slice to slice",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			values: nil,
+			path:   []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+		},
+		{
+			title: "append to slice",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			values: []interface{}{1},
+			path:   []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3, 1},
+			},
+		},
+		{
+			title: "append multiple values to slice",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			values: []interface{}{1, []interface{}{2}},
+			path:   []interface{}{"a"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3, 1, []interface{}{2}},
+			},
+		},
+
+		// Test errors:
+		{
+			title: "path cannot be empty error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			values: []interface{}{1},
+			path:   []interface{}{},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			isErr: true,
+		},
+		{
+			title: "internal Get call returns error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			values: []interface{}{1},
+			path:   []interface{}{"b"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+			},
+			isErr: true,
+		},
+		{
+			title: "expected slice node error",
+			v: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+				"b": 1,
+			},
+			values: []interface{}{1},
+			path:   []interface{}{"b"},
+			exp: map[string]interface{}{
+				"a": []interface{}{"b", 3.3},
+				"b": 1,
+			},
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		err := AppendMore(c.v, c.values, c.path...)
+		if !reflect.DeepEqual(c.v, c.exp) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.exp, c.v)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestConvertMapI2MapS(t *testing.T) {
 	cases := []struct {
 		title string      // Title of the test case
