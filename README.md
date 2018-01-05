@@ -40,7 +40,7 @@ The implementation does not use reflection at all, so performance is rather good
 
 - Delete a key from a map or an element from a slice denoted by a path: [Delete](https://godoc.org/github.com/icza/dyno#Delete)
 
-- Convert map values with `interface{}` keys to maps with `string` keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
+- Convert maps with `interface{}` keys to maps with `string` keys: [ConvertMapI2MapS](https://godoc.org/github.com/icza/dyno#ConvertMapI2MapS)
 
 ### Example
 
