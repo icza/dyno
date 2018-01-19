@@ -98,6 +98,21 @@ func GetInt(v interface{}, path ...interface{}) (int, error) {
 	return i, nil
 }
 
+// GetSlice returns a slice denoted by the path.
+//
+// If path is empty or nil, v is returned as a slice.
+func GetSlice(v interface{}, path ...interface{}) ([]interface{}, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return nil, err
+	}
+	s, ok := v.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("expected slice value, got: %T", v)
+	}
+	return s, nil
+}
+
 // GetInteger returns an int64 value denoted by the path.
 //
 // This function accepts many different types and converts them to int64, namely:

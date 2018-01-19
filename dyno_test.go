@@ -208,6 +208,62 @@ func TestGetInt(t *testing.T) {
 	}
 }
 
+func TestGetSlice(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value []interface{} // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on slice",
+			v:     []interface{}{1},
+			path:  []interface{}{},
+			value: []interface{}{1},
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"ns"},
+			value: ms["ns"].([]interface{}),
+		},
+		{
+			title: "success #2",
+			v:     s,
+			path:  []interface{}{3},
+			value: s[3].([]interface{}),
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: nil,
+			isErr: true,
+		},
+		{
+			title: "expected slice error",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: nil,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetSlice(c.v, c.path...)
+		if !reflect.DeepEqual(value, c.value) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestGetInteger(t *testing.T) {
 	cases := []struct {
 		title string        // Title of the test case
