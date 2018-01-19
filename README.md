@@ -26,7 +26,7 @@ The implementation does not use reflection at all, so performance is rather good
 
 ### Supported Operations
 
-- Get a (typed) value denoted by a path: [Get](https://godoc.org/github.com/icza/dyno#Get), [GetInt](https://godoc.org/github.com/icza/dyno#GetInt), [GetString](https://godoc.org/github.com/icza/dyno#GetString)
+- Get a (typed) value denoted by a path: [Get](https://godoc.org/github.com/icza/dyno#Get), [GetInt](https://godoc.org/github.com/icza/dyno#GetInt),  [GetString](https://godoc.org/github.com/icza/dyno#GetString), [GetSlice](https://godoc.org/github.com/icza/dyno#GetSlice), [GetMapI](https://godoc.org/github.com/icza/dyno#GetMapI), [GetMapS](https://godoc.org/github.com/icza/dyno#GetMapS)
 
 - Get a typed value with built-in conversion / parsing: [GetInteger](https://godoc.org/github.com/icza/dyno#GetInteger), [GetFloating](https://godoc.org/github.com/icza/dyno#GetFloating)
 
