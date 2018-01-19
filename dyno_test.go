@@ -264,6 +264,106 @@ func TestGetSlice(t *testing.T) {
 	}
 }
 
+func TestGetMapI(t *testing.T) {
+	cases := []struct {
+		title string                      // Title of the test case
+		v     interface{}                 // Input dynamic object
+		path  []interface{}               // path whose value to get
+		value map[interface{}]interface{} // Expected value
+		isErr bool                        // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on map",
+			v:     map[interface{}]interface{}{1: "one"},
+			path:  []interface{}{},
+			value: map[interface{}]interface{}{1: "one"},
+		},
+		{
+			title: "success",
+			v:     mi,
+			path:  []interface{}{"z"},
+			value: mi["z"].(map[interface{}]interface{}),
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: nil,
+			isErr: true,
+		},
+		{
+			title: "expected map error",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: nil,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetMapI(c.v, c.path...)
+		if !reflect.DeepEqual(value, c.value) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
+func TestGetMapS(t *testing.T) {
+	cases := []struct {
+		title string                 // Title of the test case
+		v     interface{}            // Input dynamic object
+		path  []interface{}          // path whose value to get
+		value map[string]interface{} // Expected value
+		isErr bool                   // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on map",
+			v:     map[string]interface{}{"one": 1},
+			path:  []interface{}{},
+			value: map[string]interface{}{"one": 1},
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"p"},
+			value: ms["p"].(map[string]interface{}),
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: nil,
+			isErr: true,
+		},
+		{
+			title: "expected map error",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: nil,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetMapS(c.v, c.path...)
+		if !reflect.DeepEqual(value, c.value) {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestGetInteger(t *testing.T) {
 	cases := []struct {
 		title string        // Title of the test case

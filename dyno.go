@@ -108,9 +108,39 @@ func GetSlice(v interface{}, path ...interface{}) ([]interface{}, error) {
 	}
 	s, ok := v.([]interface{})
 	if !ok {
-		return nil, fmt.Errorf("expected slice value, got: %T", v)
+		return nil, fmt.Errorf("expected slice node, got: %T", v)
 	}
 	return s, nil
+}
+
+// GetMapI returns a map with interface{} keys denoted by the path.
+//
+// If path is empty or nil, v is returned as a slice.
+func GetMapI(v interface{}, path ...interface{}) (map[interface{}]interface{}, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return nil, err
+	}
+	m, ok := v.(map[interface{}]interface{})
+	if !ok {
+		return nil, fmt.Errorf("expected map with interface keys node, got: %T", v)
+	}
+	return m, nil
+}
+
+// GetMapS returns a map with string keys denoted by the path.
+//
+// If path is empty or nil, v is returned as a slice.
+func GetMapS(v interface{}, path ...interface{}) (map[string]interface{}, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return nil, err
+	}
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("expected map with string keys node, got: %T", v)
+	}
+	return m, nil
 }
 
 // GetInteger returns an int64 value denoted by the path.
