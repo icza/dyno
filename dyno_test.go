@@ -732,6 +732,183 @@ func TestGetString(t *testing.T) {
 	}
 }
 
+func TestGetBool(t *testing.T) {
+	cases := []struct {
+		title string        // Title of the test case
+		v     interface{}   // Input dynamic object
+		path  []interface{} // path whose value to get
+		value bool          // Expected value
+		isErr bool          // Tells if error is expected
+	}{
+		// Test success:
+		{
+			title: "empty path on int",
+			v:     1,
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success",
+			v:     ms,
+			path:  []interface{}{"a"},
+			value: true,
+		},
+		{
+			title: "success from float64",
+			v:     float64(1.1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from float32",
+			v:     float32(1.1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from int64",
+			v:     int64(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from int",
+			v:     int(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from int32",
+			v:     int32(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from int16",
+			v:     int16(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from int8",
+			v:     int8(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from uint",
+			v:     uint(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from uint64",
+			v:     uint64(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from uint32",
+			v:     uint32(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from uint16",
+			v:     uint16(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from uint8",
+			v:     uint8(1),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from string (true)",
+			v:     "true",
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from string (TRUE)",
+			v:     "TRUE",
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from string (False)",
+			v:     "False",
+			path:  []interface{}{},
+			value: false,
+		},
+		{
+			title: "success from string (1)",
+			v:     "1",
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from string (false)",
+			v:     "0",
+			path:  []interface{}{},
+			value: false,
+		},
+		{
+			title: "success from string 1.1",
+			v:     string("1.1"),
+			path:  []interface{}{},
+			value: true,
+		},
+		{
+			title: "success from string 0",
+			v:     string("0"),
+			path:  []interface{}{},
+			value: false,
+		},
+		{
+			title: "success from json.Number method",
+			v:     json.Number("1.1"),
+			path:  []interface{}{},
+			value: true,
+		},
+
+		// Test errors:
+		{
+			title: "internal Get call returns error",
+			v:     ms,
+			path:  []interface{}{"x"},
+			value: false,
+			isErr: true,
+		},
+		{
+			title: "expected some form of floating point error",
+			v:     ms,
+			path:  []interface{}{"s"},
+			value: false,
+			isErr: true,
+		},
+		{
+			title: "some other form of string 'blah'",
+			v:     string("blah"),
+			path:  []interface{}{},
+			value: false,
+			isErr: true,
+		},
+	}
+
+	for _, c := range cases {
+		value, err := GetBool(c.v, c.path...)
+		if value != c.value {
+			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
+		}
+		if c.isErr != (err != nil) {
+			t.Errorf("[title: %s] Expected error: %v, got: %v, err value: %v", c.title, c.isErr, err != nil, err)
+		}
+	}
+}
+
 func TestSGet(t *testing.T) {
 	cases := []struct {
 		title string                 // Title of the test case

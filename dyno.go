@@ -40,7 +40,11 @@ Output will be:
 */
 package dyno
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+)
 
 // Get returns a value denoted by the path.
 //
@@ -279,6 +283,51 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 		return "", fmt.Errorf("expected string value, got: %T", v)
 	}
 	return s, nil
+}
+
+// GetBool returns a bool value denoted by the path.
+//
+// This function accepts many different types and converts them to bool, namely:
+//  -integer and float types
+//   zero will be false, non zero will be true
+//  -string (strconv.ParseBool() will be used for parsing)
+//
+// If path is empty or nil, v is returned as a bool.
+func GetBool(v interface{}, path ...interface{}) (bool, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return false, err
+	}
+
+	switch f := v.(type) {
+	case bool:
+		return f, nil
+	case float32, float64,
+		int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64:
+		return f != 0, nil
+	case string:
+		val, err := strconv.ParseBool(f)
+		if err == nil {
+			return val, err
+		}
+		// try first to convert to number
+		val2, err2 := json.Number(f).Float64()
+		if err2 != nil {
+			return val, err
+		}
+		return val2 != 0, err2
+
+	case interface {
+		Float64() (float64, error)
+	}:
+		val, err := f.Float64()
+		if err != nil {
+			return false, err
+		}
+		return val != 0, err
+	}
+	return false, fmt.Errorf("expected bool, got: %T", v)
 }
 
 // SGet returns a value denoted by the path consisting of only string keys.
