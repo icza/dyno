@@ -40,11 +40,7 @@ Output will be:
 */
 package dyno
 
-import (
-	"encoding/json"
-	"fmt"
-	"strconv"
-)
+import "fmt"
 
 // Get returns a value denoted by the path.
 //
@@ -285,15 +281,18 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 	return s, nil
 }
 
-// GetBool returns a bool value denoted by the path.
+// GetBoolean returns a bool value denoted by the path.
 //
 // This function accepts many different types and converts them to bool, namely:
+//  -boolean type
 //  -integer and float types
 //   zero will be false, non zero will be true
-//  -string (strconv.ParseBool() will be used for parsing)
+//  -string
+//   valid values for true: "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES"
+//   valid values for false: "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO"
 //
 // If path is empty or nil, v is returned as a bool.
-func GetBool(v interface{}, path ...interface{}) (bool, error) {
+func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
 	v, err := Get(v, path...)
 	if err != nil {
 		return false, err
@@ -307,17 +306,18 @@ func GetBool(v interface{}, path ...interface{}) (bool, error) {
 		uint, uint8, uint16, uint32, uint64:
 		return f != 0, nil
 	case string:
-		val, err := strconv.ParseBool(f)
-		if err == nil {
-			return val, err
+		switch f {
+		case "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES":
+			return true, nil
+		case "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO":
+			return false, nil
 		}
-		// try first to convert to number
-		val2, err2 := json.Number(f).Float64()
-		if err2 != nil {
-			return val, err
+		var n float64
+		_, err := fmt.Sscan(f, &n)
+		if err != nil {
+			return false, err
 		}
-		return val2 != 0, err2
-
+		return n != 0, nil
 	case interface {
 		Float64() (float64, error)
 	}:

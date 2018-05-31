@@ -732,7 +732,7 @@ func TestGetString(t *testing.T) {
 	}
 }
 
-func TestGetBool(t *testing.T) {
+func TestGetBoolean(t *testing.T) {
 	cases := []struct {
 		title string        // Title of the test case
 		v     interface{}   // Input dynamic object
@@ -751,6 +751,12 @@ func TestGetBool(t *testing.T) {
 			title: "success",
 			v:     ms,
 			path:  []interface{}{"a"},
+			value: true,
+		},
+		{
+			title: "success from bool",
+			v:     bool(true),
+			path:  []interface{}{},
 			value: true,
 		},
 		{
@@ -896,10 +902,17 @@ func TestGetBool(t *testing.T) {
 			value: false,
 			isErr: true,
 		},
+		{
+			title: "some decimal number as string",
+			v:     json.Number("0xff"),
+			path:  []interface{}{},
+			value: false,
+			isErr: true,
+		},
 	}
 
 	for _, c := range cases {
-		value, err := GetBool(c.v, c.path...)
+		value, err := GetBoolean(c.v, c.path...)
 		if value != c.value {
 			t.Errorf("[title: %s] Expected value: %v, got: %v", c.title, c.value, value)
 		}
