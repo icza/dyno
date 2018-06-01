@@ -896,13 +896,6 @@ func TestGetBoolean(t *testing.T) {
 			isErr: true,
 		},
 		{
-			title: "some other form of string 'blah'",
-			v:     string("blah"),
-			path:  []interface{}{},
-			value: false,
-			isErr: true,
-		},
-		{
 			title: "some decimal number as string",
 			v:     json.Number("0xff"),
 			path:  []interface{}{},

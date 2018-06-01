@@ -40,7 +40,9 @@ Output will be:
 */
 package dyno
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Get returns a value denoted by the path.
 //
@@ -285,10 +287,8 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 //
 // This function accepts many different types and converts them to bool, namely:
 //  -boolean type
-//  -integer and float types (zero value converting to false, others to true)
-//  -string;
-//   values converting to true: "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES"
-//   values converting to false: "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO"
+//  -integer and floating point types (false for zero values, true otherwise)
+//  -string (fmt.Sscan() will be used for parsing)
 //
 // If path is empty or nil, v is returned as a bool.
 func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
@@ -325,18 +325,9 @@ func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
 	case float32:
 		return f != 0, nil
 	case string:
-		switch f {
-		case "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES":
-			return true, nil
-		case "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO":
-			return false, nil
-		}
-		var n float64
+		var n bool
 		_, err := fmt.Sscan(f, &n)
-		if err != nil {
-			return false, err
-		}
-		return n != 0, nil
+		return n, err
 	case interface {
 		Float64() (float64, error)
 	}:
