@@ -281,6 +281,55 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 	return s, nil
 }
 
+// GetBoolean returns a bool value denoted by the path.
+//
+// This function accepts many different types and converts them to bool, namely:
+//  -boolean type
+//  -integer and float types
+//   zero will be false, non zero will be true
+//  -string
+//   valid values for true: "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES"
+//   valid values for false: "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO"
+//
+// If path is empty or nil, v is returned as a bool.
+func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
+	v, err := Get(v, path...)
+	if err != nil {
+		return false, err
+	}
+
+	switch f := v.(type) {
+	case bool:
+		return f, nil
+	case float32, float64,
+		int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64:
+		return f != 0, nil
+	case string:
+		switch f {
+		case "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES":
+			return true, nil
+		case "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO":
+			return false, nil
+		}
+		var n float64
+		_, err := fmt.Sscan(f, &n)
+		if err != nil {
+			return false, err
+		}
+		return n != 0, nil
+	case interface {
+		Float64() (float64, error)
+	}:
+		val, err := f.Float64()
+		if err != nil {
+			return false, err
+		}
+		return val != 0, err
+	}
+	return false, fmt.Errorf("expected bool, got: %T", v)
+}
+
 // SGet returns a value denoted by the path consisting of only string keys.
 //
 // SGet is an optimized and specialized version of the general Get.
