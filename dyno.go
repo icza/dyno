@@ -300,9 +300,29 @@ func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
 	switch f := v.(type) {
 	case bool:
 		return f, nil
-	case float32, float64,
-		int, int8, int16, int32, int64,
-		uint, uint8, uint16, uint32, uint64:
+	case int:
+		return f != 0, nil
+	case int64:
+		return f != 0, nil
+	case int32:
+		return f != 0, nil
+	case int16:
+		return f != 0, nil
+	case int8:
+		return f != 0, nil
+	case uint:
+		return f != 0, nil
+	case uint64:
+		return f != 0, nil
+	case uint32:
+		return f != 0, nil
+	case uint16:
+		return f != 0, nil
+	case uint8:
+		return f != 0, nil
+	case float64:
+		return f != 0, nil
+	case float32:
 		return f != 0, nil
 	case string:
 		switch f {
@@ -325,8 +345,9 @@ func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
 			return false, err
 		}
 		return val != 0, err
+	default:
+		return false, fmt.Errorf("expected bool, got: %T", v)
 	}
-	return false, fmt.Errorf("expected bool, got: %T", v)
 }
 
 // SGet returns a value denoted by the path consisting of only string keys.
