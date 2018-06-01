@@ -285,11 +285,10 @@ func GetString(v interface{}, path ...interface{}) (string, error) {
 //
 // This function accepts many different types and converts them to bool, namely:
 //  -boolean type
-//  -integer and float types
-//   zero will be false, non zero will be true
-//  -string
-//   valid values for true: "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES"
-//   valid values for false: "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO"
+//  -integer and float types (zero value converting to false, others to true)
+//  -string;
+//   values converting to true: "1", "t", "true", "T", "True", "TRUE", "yes", "y", "Y", "Yes", "YES"
+//   values converting to false: "0", "f", "false", "F", "False", "FALSE", "no", "n", "N", "No", "NO"
 //
 // If path is empty or nil, v is returned as a bool.
 func GetBoolean(v interface{}, path ...interface{}) (bool, error) {
