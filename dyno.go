@@ -404,9 +404,15 @@ func Set(v interface{}, value interface{}, path ...interface{}) error {
 		if !ok {
 			return fmt.Errorf("expected string path element, got: %T (path element idx: %d)", el, i)
 		}
+		if node == nil {
+			return fmt.Errorf("cannot set a value in a nil map (path element idx: %d)", i)
+		}
 		node[key] = value
 
 	case map[interface{}]interface{}:
+		if node == nil {
+			return fmt.Errorf("cannot set a value in a nil map (path element idx: %d)", i)
+		}
 		node[el] = value
 
 	case []interface{}:
@@ -458,6 +464,9 @@ func SSet(m map[string]interface{}, value interface{}, path ...string) error {
 		}
 	}
 
+	if m == nil {
+		return fmt.Errorf("cannot set a value in a nil map (path element idx: %d)", i)
+	}
 	m[path[i]] = value
 	return nil
 }
