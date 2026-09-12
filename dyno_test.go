@@ -1618,3 +1618,30 @@ func TestConvertMapI2MapS(t *testing.T) {
 		}
 	}
 }
+
+func TestSetNilMaps(t *testing.T) {
+	var stringsMap map[string]interface{}
+	var interfaceMap map[interface{}]interface{}
+	for name, set := range map[string]func() error{
+		"Set string map":           func() error { return Set(stringsMap, 1, "key") },
+		"Set interface map":        func() error { return Set(interfaceMap, 1, "key") },
+		"SSet":                     func() error { return SSet(stringsMap, 1, "key") },
+		"Set nested string map":    func() error { return Set(map[string]interface{}{"child": stringsMap}, 1, "child", "key") },
+		"Set nested interface map": func() error { return Set(map[string]interface{}{"child": interfaceMap}, 1, "child", "key") },
+		"SSet nested":              func() error { return SSet(map[string]interface{}{"child": stringsMap}, 1, "child", "key") },
+	} {
+		t.Run(name, func(t *testing.T) {
+			defer func() {
+				if p := recover(); p != nil {
+					t.Errorf("panicked instead of returning an error: %v", p)
+				}
+			}()
+			if err := set(); err == nil {
+				t.Error("expected an error for a nil map")
+			}
+		})
+	}
+	if stringsMap != nil || interfaceMap != nil {
+		t.Fatal("nil map was changed")
+	}
+}
